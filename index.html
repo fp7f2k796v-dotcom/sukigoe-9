@@ -1,0 +1,1009 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>男性声優好き声9選</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Yu Gothic", sans-serif;
+      background: #fff8fb;
+      color: #514550;
+    }
+
+    header {
+      position: relative;
+      text-align: center;
+      padding: 42px 20px 24px;
+    }
+    header::before, header::after { position: absolute; color: #e9b8ce; font-size: 25px; pointer-events: none; }
+    header::before { content: "✦"; left: max(8%, calc((100% - 700px) / 2)); top: 48px; transform: rotate(-12deg); }
+    header::after { content: "♡"; right: max(8%, calc((100% - 700px) / 2)); top: 70px; font-size: 29px; transform: rotate(12deg); }
+
+    .subtitle {
+      color: #b17c9c;
+      font-size: 13px;
+      letter-spacing: 3px;
+    }
+
+    h1 {
+      margin: 12px 0;
+      font-size: clamp(30px, 7vw, 44px);
+      color: #a85f88;
+    }
+
+    header p {
+      line-height: 1.8;
+      color: #867682;
+    }
+
+    main {
+      width: min(90%, 650px);
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: white;
+      padding: 25px;
+      border: 1px solid #f1dce8;
+      border-radius: 22px;
+      box-shadow: 0 8px 28px #b87e9912;
+      margin-bottom: 20px;
+    }
+
+    .panel h2 { margin-top: 0; }
+
+    .mode-list, #work-list, #comparison-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .mode-button, .choice-button, .back-button {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #ecd5e2;
+      border-radius: 14px;
+      background: #fffafd;
+      color: #654c60;
+      text-align: left;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .mode-button:hover, .choice-button:hover {
+      background: #fcecf5;
+      border-color: #dba7c4;
+    }
+
+    .mode-title {
+      display: block;
+      font-weight: bold;
+    }
+
+    .mode-description {
+      display: block;
+      margin-top: 5px;
+      color: #988693;
+      font-size: 12px;
+      line-height: 1.5;
+      font-weight: normal;
+    }
+    .welcome-panel { position: relative; text-align: center; padding: 38px 25px; overflow: hidden; background: linear-gradient(145deg, #fff 0%, #fff8fc 65%, #f8efff 100%); }
+    .welcome-panel::before { content: "✧  ♡  ✧"; display: block; margin: 0 auto 12px; color: #dba2c0; letter-spacing: 12px; font-size: 18px; }
+    .welcome-panel h2 { margin: 0 0 12px; color: #9d527d; font-size: clamp(22px, 4vw, 28px); }
+    .welcome-panel p { line-height: 1.8; color: #867682; margin: 0 0 22px; }
+    .mode-heading { margin-bottom: 6px; }
+    .mode-intro { margin-top: 0; color: #988693; font-size: 13px; }
+    .mode-button { display: block; position: relative; padding: 15px 16px; padding-right: 16px; }
+    .mode-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .mode-title { display: block; font-weight: bold; }
+    .mode-description { flex: 0 0 auto; margin-top: 0; padding: 4px 9px; border-radius: 999px; background: #f5eaf1; color: #95647f; font-size: 11px; line-height: 1.35; font-weight: bold; }
+    .mode-detail { display: block; margin-top: 8px; color: #a08096; font-size: 11px; line-height: 1.5; font-weight: normal; }
+    .actor-choice-layout { display: flex; align-items: center; gap: 12px; text-align: left; }
+    .actor-avatar { flex: 0 0 46px; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border-radius: 15px; font-size: 23px; font-weight: bold; box-shadow: inset 0 0 0 1px #ffffffaa; transition: transform .15s ease; }
+    .choice-button:hover .actor-avatar { transform: rotate(-4deg) scale(1.04); }
+    /* 声優ごとに固定される色パターン。色数を増やして隣り合うカードの見分けやすさを向上 */
+    .actor-style-0 { background:hsl(0.0 48% 91%); color:hsl(0.0 48% 36%); }
+    .actor-style-1 { background:hsl(137.5 55% 88%); color:hsl(137.5 48% 40%); }
+    .actor-style-2 { background:hsl(275.0 62% 85%); color:hsl(275.0 48% 44%); }
+    .actor-style-3 { background:hsl(52.5 69% 91%); color:hsl(52.5 48% 36%); }
+    .actor-style-4 { background:hsl(190.0 48% 88%); color:hsl(190.0 48% 40%); }
+    .actor-style-5 { background:hsl(327.5 55% 85%); color:hsl(327.5 48% 44%); }
+    .actor-style-6 { background:hsl(105.0 62% 91%); color:hsl(105.0 48% 36%); }
+    .actor-style-7 { background:hsl(242.6 69% 88%); color:hsl(242.6 48% 40%); }
+    .actor-style-8 { background:hsl(20.1 48% 85%); color:hsl(20.1 48% 44%); }
+    .actor-style-9 { background:hsl(157.6 55% 91%); color:hsl(157.6 48% 36%); }
+    .actor-style-10 { background:hsl(295.1 62% 88%); color:hsl(295.1 48% 40%); }
+    .actor-style-11 { background:hsl(72.6 69% 85%); color:hsl(72.6 48% 44%); }
+    .actor-style-12 { background:hsl(210.1 48% 91%); color:hsl(210.1 48% 36%); }
+    .actor-style-13 { background:hsl(347.6 55% 88%); color:hsl(347.6 48% 40%); }
+    .actor-style-14 { background:hsl(125.1 62% 85%); color:hsl(125.1 48% 44%); }
+    .actor-style-15 { background:hsl(262.6 69% 91%); color:hsl(262.6 48% 36%); }
+    .actor-style-16 { background:hsl(40.1 48% 88%); color:hsl(40.1 48% 40%); }
+    .actor-style-17 { background:hsl(177.6 55% 85%); color:hsl(177.6 48% 44%); }
+    .actor-style-18 { background:hsl(315.1 62% 91%); color:hsl(315.1 48% 36%); }
+    .actor-style-19 { background:hsl(92.7 69% 88%); color:hsl(92.7 48% 40%); }
+    .actor-style-20 { background:hsl(230.2 48% 85%); color:hsl(230.2 48% 44%); }
+    .actor-style-21 { background:hsl(7.7 55% 91%); color:hsl(7.7 48% 36%); }
+    .actor-style-22 { background:hsl(145.2 62% 88%); color:hsl(145.2 48% 40%); }
+    .actor-style-23 { background:hsl(282.7 69% 85%); color:hsl(282.7 48% 44%); }
+    .actor-style-24 { background:hsl(60.2 48% 91%); color:hsl(60.2 48% 36%); }
+    .actor-style-25 { background:hsl(197.7 55% 88%); color:hsl(197.7 48% 40%); }
+    .actor-style-26 { background:hsl(335.2 62% 85%); color:hsl(335.2 48% 44%); }
+    .actor-style-27 { background:hsl(112.7 69% 91%); color:hsl(112.7 48% 36%); }
+    .actor-style-28 { background:hsl(250.2 48% 88%); color:hsl(250.2 48% 40%); }
+    .actor-style-29 { background:hsl(27.7 55% 85%); color:hsl(27.7 48% 44%); }
+    .actor-style-30 { background:hsl(165.2 62% 91%); color:hsl(165.2 48% 36%); }
+    .actor-style-31 { background:hsl(302.7 69% 88%); color:hsl(302.7 48% 40%); }
+    .actor-style-32 { background:hsl(80.3 48% 85%); color:hsl(80.3 48% 44%); }
+    .actor-style-33 { background:hsl(217.8 55% 91%); color:hsl(217.8 48% 36%); }
+    .actor-style-34 { background:hsl(355.3 62% 88%); color:hsl(355.3 48% 40%); }
+    .actor-style-35 { background:hsl(132.8 69% 85%); color:hsl(132.8 48% 44%); }
+    .actor-style-36 { background:hsl(270.3 48% 91%); color:hsl(270.3 48% 36%); }
+    .actor-style-37 { background:hsl(47.8 55% 88%); color:hsl(47.8 48% 40%); }
+    .actor-style-38 { background:hsl(185.3 62% 85%); color:hsl(185.3 48% 44%); }
+    .actor-style-39 { background:hsl(322.8 69% 91%); color:hsl(322.8 48% 36%); }
+    .actor-style-40 { background:hsl(100.3 48% 88%); color:hsl(100.3 48% 40%); }
+    .actor-style-41 { background:hsl(237.8 55% 85%); color:hsl(237.8 48% 44%); }
+    .actor-style-42 { background:hsl(15.3 62% 91%); color:hsl(15.3 48% 36%); }
+    .actor-style-43 { background:hsl(152.8 69% 88%); color:hsl(152.8 48% 40%); }
+    .actor-style-44 { background:hsl(290.4 48% 85%); color:hsl(290.4 48% 44%); }
+    .actor-style-45 { background:hsl(67.9 55% 91%); color:hsl(67.9 48% 36%); }
+    .actor-style-46 { background:hsl(205.4 62% 88%); color:hsl(205.4 48% 40%); }
+    .actor-style-47 { background:hsl(342.9 69% 85%); color:hsl(342.9 48% 44%); }
+    .actor-style-48 { background:hsl(120.4 48% 91%); color:hsl(120.4 48% 36%); }
+    .actor-style-49 { background:hsl(257.9 55% 88%); color:hsl(257.9 48% 40%); }
+    .actor-style-50 { background:hsl(35.4 62% 85%); color:hsl(35.4 48% 44%); }
+    .actor-style-51 { background:hsl(172.9 69% 91%); color:hsl(172.9 48% 36%); }
+    .actor-style-52 { background:hsl(310.4 48% 88%); color:hsl(310.4 48% 40%); }
+    .actor-style-53 { background:hsl(87.9 55% 85%); color:hsl(87.9 48% 44%); }
+    .actor-style-54 { background:hsl(225.4 62% 91%); color:hsl(225.4 48% 36%); }
+    .actor-style-55 { background:hsl(2.9 69% 88%); color:hsl(2.9 48% 40%); }
+    .actor-style-56 { background:hsl(140.4 48% 85%); color:hsl(140.4 48% 44%); }
+    .actor-style-57 { background:hsl(278.0 55% 91%); color:hsl(278.0 48% 36%); }
+    .actor-style-58 { background:hsl(55.5 62% 88%); color:hsl(55.5 48% 40%); }
+    .actor-style-59 { background:hsl(193.0 69% 85%); color:hsl(193.0 48% 44%); }
+    .actor-style-60 { background:hsl(330.5 48% 91%); color:hsl(330.5 48% 36%); }
+    .actor-style-61 { background:hsl(108.0 55% 88%); color:hsl(108.0 48% 40%); }
+    .actor-style-62 { background:hsl(245.5 62% 85%); color:hsl(245.5 48% 44%); }
+    .actor-style-63 { background:hsl(23.0 69% 91%); color:hsl(23.0 48% 36%); }
+    .actor-style-64 { background:hsl(160.5 48% 88%); color:hsl(160.5 48% 40%); }
+    .actor-style-65 { background:hsl(298.0 55% 85%); color:hsl(298.0 48% 44%); }
+    .actor-style-66 { background:hsl(75.5 62% 91%); color:hsl(75.5 48% 36%); }
+    .actor-style-67 { background:hsl(213.0 69% 88%); color:hsl(213.0 48% 40%); }
+    .actor-style-68 { background:hsl(350.5 48% 85%); color:hsl(350.5 48% 44%); }
+    .actor-style-69 { background:hsl(128.1 55% 91%); color:hsl(128.1 48% 36%); }
+    .actor-style-70 { background:hsl(265.6 62% 88%); color:hsl(265.6 48% 40%); }
+    .actor-style-71 { background:hsl(43.1 69% 85%); color:hsl(43.1 48% 44%); }
+    .actor-style-72 { background:hsl(180.6 48% 91%); color:hsl(180.6 48% 36%); }
+    .actor-style-73 { background:hsl(318.1 55% 88%); color:hsl(318.1 48% 40%); }
+    .actor-style-74 { background:hsl(95.6 62% 85%); color:hsl(95.6 48% 44%); }
+    .actor-style-75 { background:hsl(233.1 69% 91%); color:hsl(233.1 48% 36%); }
+    .actor-style-76 { background:hsl(10.6 48% 88%); color:hsl(10.6 48% 40%); }
+    .actor-style-77 { background:hsl(148.1 55% 85%); color:hsl(148.1 48% 44%); }
+    .actor-style-78 { background:hsl(285.6 62% 91%); color:hsl(285.6 48% 36%); }
+    .actor-style-79 { background:hsl(63.1 69% 88%); color:hsl(63.1 48% 40%); }
+    .actor-style-80 { background:hsl(200.6 48% 85%); color:hsl(200.6 48% 44%); }
+    .actor-style-81 { background:hsl(338.1 55% 91%); color:hsl(338.1 48% 36%); }
+    .actor-style-82 { background:hsl(115.7 62% 88%); color:hsl(115.7 48% 40%); }
+    .actor-style-83 { background:hsl(253.2 69% 85%); color:hsl(253.2 48% 44%); }
+    .actor-style-84 { background:hsl(30.7 48% 91%); color:hsl(30.7 48% 36%); }
+    .actor-style-85 { background:hsl(168.2 55% 88%); color:hsl(168.2 48% 40%); }
+    .actor-style-86 { background:hsl(305.7 62% 85%); color:hsl(305.7 48% 44%); }
+    .actor-style-87 { background:hsl(83.2 69% 91%); color:hsl(83.2 48% 36%); }
+    .actor-style-88 { background:hsl(220.7 48% 88%); color:hsl(220.7 48% 40%); }
+    .actor-style-89 { background:hsl(358.2 55% 85%); color:hsl(358.2 48% 44%); }
+    .actor-style-90 { background:hsl(135.7 62% 91%); color:hsl(135.7 48% 36%); }
+    .actor-style-91 { background:hsl(273.2 69% 88%); color:hsl(273.2 48% 40%); }
+    .actor-style-92 { background:hsl(50.7 48% 85%); color:hsl(50.7 48% 44%); }
+    .actor-style-93 { background:hsl(188.2 55% 91%); color:hsl(188.2 48% 36%); }
+    .actor-style-94 { background:hsl(325.8 62% 88%); color:hsl(325.8 48% 40%); }
+    .actor-style-95 { background:hsl(103.3 69% 85%); color:hsl(103.3 48% 44%); }
+    .actor-style-96 { background:hsl(240.8 48% 91%); color:hsl(240.8 48% 36%); }
+    .actor-style-97 { background:hsl(18.3 55% 88%); color:hsl(18.3 48% 40%); }
+    .actor-style-98 { background:hsl(155.8 62% 85%); color:hsl(155.8 48% 44%); }
+    .actor-style-99 { background:hsl(293.3 69% 91%); color:hsl(293.3 48% 36%); }
+    .actor-style-100 { background:hsl(70.8 48% 88%); color:hsl(70.8 48% 40%); }
+    .actor-style-101 { background:hsl(208.3 55% 85%); color:hsl(208.3 48% 44%); }
+    .actor-style-102 { background:hsl(345.8 62% 91%); color:hsl(345.8 48% 36%); }
+    .actor-style-103 { background:hsl(123.3 69% 88%); color:hsl(123.3 48% 40%); }
+    .actor-style-104 { background:hsl(260.8 48% 85%); color:hsl(260.8 48% 44%); }
+    .actor-style-105 { background:hsl(38.3 55% 91%); color:hsl(38.3 48% 36%); }
+    .actor-style-106 { background:hsl(175.8 62% 88%); color:hsl(175.8 48% 40%); }
+    .actor-style-107 { background:hsl(313.4 69% 85%); color:hsl(313.4 48% 44%); }
+    .actor-style-108 { background:hsl(90.9 48% 91%); color:hsl(90.9 48% 36%); }
+    .actor-style-109 { background:hsl(228.4 55% 88%); color:hsl(228.4 48% 40%); }
+    .actor-style-110 { background:hsl(5.9 62% 85%); color:hsl(5.9 48% 44%); }
+    .actor-style-111 { background:hsl(143.4 69% 91%); color:hsl(143.4 48% 36%); }
+    .actor-style-112 { background:hsl(280.9 48% 88%); color:hsl(280.9 48% 40%); }
+    .actor-style-113 { background:hsl(58.4 55% 85%); color:hsl(58.4 48% 44%); }
+    .actor-style-114 { background:hsl(195.9 62% 91%); color:hsl(195.9 48% 36%); }
+    .actor-style-115 { background:hsl(333.4 69% 88%); color:hsl(333.4 48% 40%); }
+    .actor-style-116 { background:hsl(110.9 48% 85%); color:hsl(110.9 48% 44%); }
+    .actor-style-117 { background:hsl(248.4 55% 91%); color:hsl(248.4 48% 36%); }
+    .actor-style-118 { background:hsl(25.9 62% 88%); color:hsl(25.9 48% 40%); }
+    .actor-style-119 { background:hsl(163.5 69% 85%); color:hsl(163.5 48% 44%); }
+    .actor-style-120 { background:hsl(301.0 48% 91%); color:hsl(301.0 48% 36%); }
+    .actor-style-121 { background:hsl(78.5 55% 88%); color:hsl(78.5 48% 40%); }
+    .actor-style-122 { background:hsl(216.0 62% 85%); color:hsl(216.0 48% 44%); }
+    .actor-style-123 { background:hsl(353.5 69% 91%); color:hsl(353.5 48% 36%); }
+    .actor-style-124 { background:hsl(131.0 48% 88%); color:hsl(131.0 48% 40%); }
+    .actor-style-125 { background:hsl(268.5 55% 85%); color:hsl(268.5 48% 44%); }
+    .actor-style-126 { background:hsl(46.0 62% 91%); color:hsl(46.0 48% 36%); }
+    .actor-style-127 { background:hsl(183.5 69% 88%); color:hsl(183.5 48% 40%); }
+    .actor-choice-copy { min-width: 0; flex: 1; }
+    .actor-button-name { display: block; font-weight: bold; line-height: 1.4; overflow-wrap: anywhere; }
+    .actor-credit { display: block; margin-top: 5px; font-size: 11px; line-height: 1.5; font-weight: normal; color: #927b8c; }
+    .credit-work { display: inline-block; margin: 2px 4px 2px 0; padding: 3px 7px; border-radius: 6px; background: #f7eaf1; color: #93647e; font-size: 10px; }
+    .credit-character { display: inline; color: #725d6e; }
+    .choice-button .actor-credit { text-align: left; }
+    .result-credit { font-size: 10px; line-height: 1.35; color: #927b8c; font-weight: normal; }
+    .share-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+    .share-row input { flex: 1; min-width: 160px; padding: 12px; border: 1px solid #ecd5e2; border-radius: 10px; font: inherit; }
+    .share-note { font-size: 12px; line-height: 1.7; color: #988693; }
+
+    .primary-button {
+      padding: 13px 20px;
+      border: none;
+      border-radius: 12px;
+      background: #a85f88;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .primary-button:hover { background: #914a73; }
+
+    .work-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid #ecd5e2;
+      border-radius: 12px;
+      background: #fffafd;
+      cursor: pointer;
+    }
+
+    .work-item input { accent-color: #a85f88; }
+    .work-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 16px; }
+    .work-filter button { border: 1px solid #e8c9da; border-radius: 999px; background: #fffafd; color: #87556f; padding: 8px 12px; cursor: pointer; font: inherit; font-size: 13px; }
+    .work-filter button.active { background: #a85f88; border-color: #a85f88; color: white; }
+    .work-filter button:focus-visible { outline: 2px solid #a85f88; outline-offset: 2px; }
+    .candidate-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f1e2eb; }
+    .candidate-row .candidate-info { min-width: 0; flex: 1; }
+    .candidate-row .candidate-credit { font-size: 12px; color: #927b8c; line-height: 1.5; }
+    .candidate-row button { flex-shrink: 0; padding: 7px 10px; border: 1px solid #dcb3ca; border-radius: 9px; background: #fffafd; color: #9b5278; cursor: pointer; font: inherit; font-size: 12px; }
+    .candidate-row.selected-replacement { background: #fff0f7; border-radius: 10px; padding-left: 8px; padding-right: 8px; }
+    .candidate-help { font-size: 12px; color: #927b8c; }
+
+    #comparison-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .choice-button {
+      text-align: center;
+      min-height: 75px;
+      font-weight: bold;
+    }
+
+    .choice-button.selected {
+      background: #fcecf5;
+      border: 2px solid #a85f88;
+    }
+
+    .help-text {
+      color: #988693;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .add-actor-row { display: flex; gap: 8px; margin: 10px 0; }
+    .add-actor-row input { flex: 1; min-width: 0; padding: 12px; border: 1px solid #ecd5e2; border-radius: 10px; font: inherit; }
+    .add-actor-row input:disabled { background: #f5f0f3; color: #a99aa5; cursor: not-allowed; }
+    .secondary-button:disabled { opacity: .55; cursor: not-allowed; }
+    .secondary-button { padding: 12px 16px; border: 1px solid #ecd5e2; border-radius: 10px; background: #fffafd; color: #654c60; cursor: pointer; }
+    #prelim-result-list { line-height: 1.9; }
+    .result-grid { list-style: none; padding: 0; margin: 20px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .result-card { aspect-ratio: 1 / 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; padding: 8px; border: 1px solid #f1d3e2; border-radius: 15px; background: #f9e3ed; text-align: center; overflow-wrap: anywhere; }
+    .result-rank { font-size: 15px; color: #a84d74; font-weight: bold; }
+    .result-name { font-size: clamp(13px, 3vw, 18px); font-weight: bold; line-height: 1.35; text-align: center; }
+    .result-card.rank-1 { background: #fff0c2; border: 2px solid #d7af55; }
+    .result-card.rank-1 .result-rank, .result-card.rank-1 .result-name { color: #80591b; }
+    .result-card.rank-2 { background: #ddf3e8; }
+    .result-card.rank-2 .result-rank, .result-card.rank-2 .result-name { color: #367d61; }
+    .result-card.rank-3 { background: #dceeff; }
+    .result-card.rank-3 .result-rank, .result-card.rank-3 .result-name { color: #3975a8; }
+    .result-card.rank-4, .result-card.rank-5, .result-card.rank-6 { background: #f9e3ed; }
+    .result-card.rank-7, .result-card.rank-8, .result-card.rank-9 { background: #f0e5fa; }
+    .result-crown { font-size: 22px; line-height: 1; }
+    @media (max-width: 420px) { .result-grid { gap: 6px; } .result-card { padding: 4px; border-radius: 10px; } }
+
+    footer {
+      padding: 30px 15px;
+      color: #b5a3b0;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 480px) {
+      header::before, header::after { opacity: .55; }
+      .mode-title-row { align-items: flex-start; flex-direction: column; gap: 5px; }
+      .mode-description { align-self: flex-start; }
+    }
+    @media (max-width: 420px) {
+      .panel { padding: 20px; }
+      #comparison-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="subtitle">MY FAVORITE VOICE ACTOR</div>
+    <h1>男性声優好き声9選</h1>
+    <p>あなたの「好き！」が詰まった9人を見つけよう。</p>
+  </header>
+
+  <main>
+    <section class="panel welcome-panel" id="home-screen">
+      <h2>あなたの好き声、見つけよう♡</h2>
+      <p>気になる声優を選んで比べるだけ。<br>あなただけのTOP9を作ろう！</p>
+      <button class="primary-button" id="begin-button">スタート</button>
+    </section>
+
+    <section class="panel" id="mode-screen" hidden>
+      <h2 class="mode-heading">どこから選ぶ？</h2>
+      <p class="mode-intro">自分に合った方法を選んでね。</p>
+      <div class="mode-list">
+        <button class="mode-button" data-mode="work">
+          <span class="mode-title-row"><span class="mode-title">📚 作品から選ぶ</span><span class="mode-description">女性向け作品が好き</span></span>
+          <span class="mode-detail">刀剣乱舞、A3!、まほやくなど。基本はメインキャラで、声優以外の出演者も含むよ。</span>
+        </button>
+        <button class="mode-button" data-mode="regular">
+          <span class="mode-title-row"><span class="mode-title">🎙️ 定番声優から選ぶ</span><span class="mode-description">名前がある程度わかる</span></span>
+          <span class="mode-detail">女性向け作品でおなじみの声優が中心。リストにいない声優は、あとから追加できるよ。</span>
+        </button>
+        <button class="mode-button" data-mode="all">
+          <span class="mode-title-row"><span class="mode-title">🎧 全声優から選ぶ</span><span class="mode-description">声優に詳しい</span></span>
+          <span class="mode-detail">作品リストに登録された声優から選ぶよ。リストにいない声優は、あとから追加できるよ。</span>
+        </button>
+      </div>
+      <button class="back-button" id="mode-back-button">トップへ戻る</button>
+    </section>
+
+    <section class="panel" id="work-screen" hidden>
+      <h2>好きな作品を選んでね</h2>
+      <p class="help-text">複数選択できるよ！ 五十音で絞り込めるよ。</p>
+      <div id="work-filter" class="work-filter" aria-label="作品を五十音で絞り込む"></div>
+      <div id="work-list"></div>
+      <p id="work-message" class="help-text"></p>
+      <button class="primary-button" id="start-work-button">
+        この作品でソート開始
+      </button>
+      <button class="back-button" data-back>戻る</button>
+    </section>
+
+    <section class="panel" id="comparison-screen" hidden>
+      <h2 id="comparison-title">予選：どの声が好き？</h2>
+      <p id="comparison-progress" class="help-text"></p>
+      <p id="comparison-instruction" class="help-text">好きな声優をタップしてね。</p>
+      <div id="comparison-list"></div>
+      <p id="comparison-message" class="help-text"></p>
+      <div id="prelim-actions">
+        <button class="primary-button" id="next-group-button">次のグループへ</button>
+        <p class="help-text">選ばずに進んでもOK！</p>
+      </div>
+      <div id="final-actions" hidden>
+        <label class="help-text" for="add-actor-input">本戦に追加したい声優名</label>
+        <div class="add-actor-row">
+          <input id="add-actor-input" type="text" maxlength="80" placeholder="声優名を入力">
+          <button class="secondary-button" id="add-actor-button">追加</button>
+        </div>
+        <p class="help-text">予選結果にいない声優も追加できるよ。</p>
+        <ol id="prelim-result-list"></ol>
+        <button class="primary-button" id="start-final-button">本戦を始める</button>
+      </div>
+      <button class="back-button" id="previous-button">一つ前のグループへ</button>
+      <button class="back-button" id="restart-button">最初に戻る</button>
+    </section>
+
+    <section class="panel" id="result-screen" hidden>
+      <h2>好き声9選ソート結果</h2>
+      <p class="help-text">選んだ声優の中から決まったTOP9だよ。</p>
+      <ol id="result-list" class="result-grid"></ol>
+      <h3>結果をシェアしよう！</h3>
+      <label class="help-text" for="player-name">ポストに表示する名前（任意）</label>
+      <div class="share-row">
+        <input id="player-name" type="text" maxlength="40" placeholder="名前を入力（空欄でもOK）">
+        <button class="secondary-button" id="save-result-image-button">結果画像を保存</button>
+        <button class="primary-button" id="share-image-x-button">画像付きで共有</button>
+        <button class="secondary-button" id="share-text-x-button">文字だけで共有</button>
+      </div>
+      <p class="share-note">画像付きは画像を保存してからXを開くよ。Xの投稿画面で画像を添付してね。文字だけなら順位と声優名が投稿文に入るよ。</p>
+      <p id="share-message" class="help-text" aria-live="polite"></p>
+      <button class="back-button" id="result-back-button">最初に戻る</button>
+    </section>
+  </main>
+
+  <footer>あなたの「好き声」を見つけるソート<br>非公式のファン制作企画です。各作品・出演者の公式とは関係ありません。掲載情報には誤りや更新遅れが含まれる場合があります。</footer>
+
+  <script src="data.js"></script>
+  <script>
+const screens = {
+  home: document.getElementById("home-screen"),
+  mode: document.getElementById("mode-screen"),
+  work: document.getElementById("work-screen"),
+  comparison: document.getElementById("comparison-screen"),
+  result: document.getElementById("result-screen")
+};
+function showScreen(name) { Object.entries(screens).forEach(([key, el]) => el.hidden = key !== name); }
+const workList = document.getElementById("work-list");
+const workMessage = document.getElementById("work-message");
+const comparisonList = document.getElementById("comparison-list");
+const comparisonProgress = document.getElementById("comparison-progress");
+const comparisonMessage = document.getElementById("comparison-message");
+const nextButton = document.getElementById("next-group-button");
+const prelimActions = document.getElementById("prelim-actions");
+const finalActions = document.getElementById("final-actions");
+const resultList = document.getElementById("result-list");
+// 予選の比較回数に固定上限は設けず、境界が決まるか有効な比較がなくなるまで続ける。
+
+let candidates = [], groups = [], groupIndex = 0, groupSelections = [], winners = [], addedActors = [];
+let currentMode = "all", selectedWorkIds = new Set();
+let stage = "prelim";
+let qualifierPool = [], qualifierResults = [], qualifierCounts = new Map(), qualifierAppearances = new Map(), qualifierQuestion = 0, qualifierCurrentGroup = null, qualifierHistory = [], qualifierRedoGroup = null, qualifierAnswerLocked = false;
+let finalPool = [], finalResults = [], finalCounts = new Map(), finalCurrentPair = null, finalRedoPair = null;
+let finalSortOrder = [], finalInsertOrder = [], finalInsertIndex = 1, finalLow = 0, finalHigh = 0, finalCurrentActor = null, finalHistory = [], finalAnswerLocked = false;
+
+function uniqueActors(list) {
+  const seen = new Set();
+  return list.filter(a => a && a.id && a.name && !seen.has(a.id) && seen.add(a.id));
+}
+function shuffle(list) {
+  const a = [...list];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+// Every displayed question has exactly four distinct choices; the final group is padded with already-used actors if needed.
+function makeGroups(list, size = 4) {
+  const shuffled = shuffle(uniqueActors(list));
+  const result = [];
+  for (let i = 0; i < shuffled.length; i += size) result.push(shuffled.slice(i, i + size));
+  if (result.length && result[result.length - 1].length < size) {
+    const last = result[result.length - 1];
+    const pool = shuffle(shuffled.filter(a => !last.some(b => b.id === a.id)));
+    while (last.length < size && pool.length) last.push(pool.pop());
+  }
+  return result;
+}
+function actorCreditLines(actor) {
+  // 将来Excelから代表作データが追加されたら、そちらを優先して表示する。
+  const reps = actor.representativeWorks || actor.representativeWork || null;
+  if (reps && currentMode !== "work") {
+    const items = Array.isArray(reps) ? reps : [reps];
+    return items.slice(0, 2).map(item => typeof item === "string" ? item : [item.workName || item.work || "", item.characterName || item.character || ""].filter(Boolean).join("："));
+  }
+  const credits = characters.filter(c => c.voiceActorId === actor.id && (currentMode !== "work" || selectedWorkIds.has(c.workId)));
+  const unique = [];
+  const seen = new Set();
+  for (const c of credits) {
+    const line = [c.workName, c.characterName].filter(Boolean).join("：");
+    if (line && !seen.has(line)) { seen.add(line); unique.push(line); }
+    if (unique.length >= 2) break;
+  }
+  return unique;
+}
+function actorCreditLabel(actor) {
+  const lines = actorCreditLines(actor);
+  if (!lines.length) return currentMode === "work" ? "選択した作品のキャラクター情報なし" : "代表作データ準備中";
+  if (currentMode === "work") return lines.join(" ／ ");
+  return (actor.representativeWorks || actor.representativeWork) ? lines.join(" ／ ") : "登録作品：" + lines.join(" ／ ");
+}
+// 声優ごとに色とマークを固定。同じ声優はどの画面でも同じ見た目になる。
+// 全声優を安定した順に並べてから組み合わせを割り当てるので、同じ組み合わせの重複を防ぎ、
+// 隣り合う声優は原則として色が変わる。色128種 × マーク64種 = 最大8192通り。
+const actorMarks = ["♡","✦","♪","♬","✿","☾","❀","♢","★","❋","☼","♧","✧","❖","♩","ღ","◇","❈","♥","☆","♫","❁","☘","♤","⚝","❃","☀","♣","♦","❉","☽","✺","☯","⚜","❦","❧","⊹","✷","✵","✶","✹","✸","✴","✳","✻","✼","❊","❇","❆","❅","☁","☂","☔","⚘","⚛","∞","☪","⚡","☄","♛","♕","♔","♚"];
+const actorVisualById = new Map();
+function buildActorVisualAssignments() {
+  const list = [...(typeof voiceActors !== "undefined" ? voiceActors : [])];
+  // Hash順で固定順を作る。データの表示順が変わっても声優ごとの色は変わらない。
+  const hashKey = value => {
+    let h = 2166136261;
+    for (const ch of String(value)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+    return h;
+  };
+  list.sort((a, b) => hashKey(a.id || a.name) - hashKey(b.id || b.name) || String(a.id || a.name).localeCompare(String(b.id || b.name), "ja"));
+  list.forEach((actor, index) => {
+    const key = String(actor.id || actor.name || "unknown");
+    const colorIndex = index % 128;
+    const markIndex = Math.floor(index / 128) % actorMarks.length;
+    actorVisualById.set(key, { style: "actor-style-" + colorIndex, mark: actorMarks[markIndex] });
+  });
+}
+buildActorVisualAssignments();
+function actorVisual(actor) {
+  const key = String(actor.id || actor.name || "unknown");
+  if (actorVisualById.has(key)) return actorVisualById.get(key);
+  // 手動追加などデータ一覧にいない声優にも、名前由来の固定デザインを割り当てる。
+  let hash = 2166136261;
+  for (const ch of key) hash = Math.imul(hash ^ ch.charCodeAt(0), 16777619) >>> 0;
+  return { style: "actor-style-" + (hash % 128), mark: actorMarks[Math.floor(hash / 128) % actorMarks.length] };
+}
+
+function makeActorChoice(actor, selected, onChoose) {
+  const b = document.createElement("button");
+  b.className = "choice-button" + (selected ? " selected" : ""); b.type = "button";
+  b.setAttribute("aria-pressed", String(!!selected));
+  const layout = document.createElement("span"); layout.className = "actor-choice-layout";
+  const visual = actorVisual(actor);
+  const avatar = document.createElement("span"); avatar.className = "actor-avatar " + visual.style; avatar.setAttribute("aria-hidden", "true"); avatar.textContent = visual.mark;
+  const copy = document.createElement("span"); copy.className = "actor-choice-copy";
+  const name = document.createElement("span"); name.className = "actor-button-name"; name.textContent = actor.name + (selected ? " ✓" : ""); copy.appendChild(name);
+  const credit = document.createElement("span"); credit.className = "actor-credit";
+  const lines = actorCreditLines(actor);
+  if (!lines.length) { credit.textContent = actorCreditLabel(actor); }
+  else {
+    lines.forEach((line, index) => {
+      if (index) credit.appendChild(document.createElement("br"));
+      const parts = line.split("：");
+      if (parts.length > 1) {
+        const workName = parts.shift();
+        const work = document.createElement("span"); work.className = "credit-work " + visual.style; work.textContent = workName; credit.appendChild(work);
+        const character = document.createElement("span"); character.className = "credit-character"; character.textContent = parts.join("："); credit.appendChild(character);
+      } else {
+        const character = document.createElement("span"); character.className = "credit-character"; character.textContent = line; credit.appendChild(character);
+      }
+    });
+  }
+  copy.appendChild(credit); layout.append(avatar, copy); b.appendChild(layout);
+  b.addEventListener("click", onChoose); return b;
+}
+
+function resetRun(list) {
+  replacementTargetId = null;
+  candidates = uniqueActors(list);
+  if (candidates.length < 2) { alert("比較できる声優が2人以上必要だよ。データを確認してね！"); return false; }
+  groups = makeGroups(candidates); groupIndex = 0; groupSelections = []; winners = []; addedActors = [];
+  qualifierPool = []; qualifierResults = []; qualifierCounts = new Map(); qualifierAppearances = new Map(); qualifierQuestion = 0; qualifierCurrentGroup = null; qualifierHistory = []; qualifierRedoGroup = null; qualifierAnswerLocked = false;
+  finalPool = []; finalResults = []; finalCounts = new Map(); finalCurrentPair = null; finalRedoPair = null;
+  stage = "prelim"; showScreen("comparison"); renderGroup(); return true;
+}
+function recordPrelim(actor) {
+  if (!groupSelections[groupIndex]) groupSelections[groupIndex] = [];
+  const selected = groupSelections[groupIndex];
+  const i = selected.findIndex(a => a.id === actor.id);
+  if (i >= 0) selected.splice(i, 1); else selected.push(actor);
+  renderGroup();
+}
+function finishPrelimGroup() {
+  if (groupIndex < groups.length - 1) { groupIndex++; renderGroup(); return; }
+  winners = uniqueActors(groupSelections.flat());
+  if (winners.length >= 17) { startQualifier(winners); return; }
+  renderPrelimResults();
+}
+function renderGroup() {
+  stage = "prelim"; const group = groups[groupIndex] || [];
+  comparisonList.innerHTML = ""; comparisonList.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
+  document.getElementById("comparison-title").textContent = "予選：好きな声を選ぼう";
+  document.getElementById("comparison-instruction").textContent = "好きな人を選んでね（複数OK）。もう一度押すと解除できるよ。";
+  prelimActions.hidden = false; finalActions.hidden = true; nextButton.hidden = false;
+  nextButton.textContent = groupIndex === groups.length - 1 ? "次へ" : "次のグループへ";
+  document.getElementById("previous-button").textContent = "戻る";
+  document.getElementById("previous-button").disabled = groupIndex === 0;
+  comparisonProgress.textContent = `第1予選・グループ ${groupIndex + 1}/${groups.length}（このグループで選択 ${(groupSelections[groupIndex] || []).length} 人）`;
+  comparisonMessage.textContent = "";
+  group.forEach(actor => {
+    const selected = (groupSelections[groupIndex] || []).some(a => a.id === actor.id);
+    comparisonList.appendChild(makeActorChoice(actor, selected, () => recordPrelim(actor)));
+  });
+}
+function hasPath(fromId, toId, results) {
+  const visited = new Set(), stack = [fromId];
+  while (stack.length) {
+    const current = stack.pop(); if (current === toId) return true; if (visited.has(current)) continue; visited.add(current);
+    for (const r of results) if (r.winnerId === current && r.loserId && !visited.has(r.loserId)) stack.push(r.loserId);
+  }
+  return false;
+}
+function evidenceScore(actor, pool, results, counts) {
+  let wins = 0, losses = 0;
+  for (const r of results) {
+    if (r.winnerId === actor.id) wins++;
+    if (r.loserId === actor.id || (r.loserIds || []).includes(actor.id)) losses++;
+  }
+  const appearances = qualifierAppearances.get(actor.id) || 0;
+  const rate = wins + losses === 0 ? -1 : wins / (wins + losses);
+  return { rate, wins, losses, appearances, count: counts?.get(actor.id) || 0 };
+}
+function rankByEvidence(pool, results, counts) {
+  return [...pool].sort((a, b) => {
+    const x = evidenceScore(a, pool, results, counts), y = evidenceScore(b, pool, results, counts);
+    return y.rate - x.rate || y.wins - x.wins || x.losses - y.losses || y.appearances - x.appearances || a.name.localeCompare(b.name, "ja");
+  });
+}
+// 予選は2択の対戦結果からElo風レーティングを再計算する。回数だけで順位を決めない。
+function qualifierRatings() {
+  const ratings = new Map(qualifierPool.map(a => [a.id, 1000]));
+  for (const r of qualifierHistory) {
+    const winner = ratings.get(r.winnerId) ?? 1000;
+    const loser = ratings.get(r.loserIds[0]) ?? 1000;
+    const expectedWinner = 1 / (1 + Math.pow(10, (loser - winner) / 400));
+    const expectedLoser = 1 - expectedWinner;
+    ratings.set(r.winnerId, winner + 32 * (1 - expectedWinner));
+    ratings.set(r.loserIds[0], loser + 32 * (0 - expectedLoser));
+  }
+  return ratings;
+}
+function rankQualifier(pool = qualifierPool) {
+  const ratings = qualifierRatings();
+  const wins = new Map(pool.map(a => [a.id, 0]));
+  for (const r of qualifierHistory) wins.set(r.winnerId, (wins.get(r.winnerId) || 0) + 1);
+  return [...pool].sort((a, b) => (ratings.get(b.id) || 1000) - (ratings.get(a.id) || 1000) || (wins.get(b.id) || 0) - (wins.get(a.id) || 0) || a.name.localeCompare(b.name, "ja"));
+}
+function pairKey(a, b) { return [a.id, b.id].sort().join("::"); }
+function qualifierPlayedPairs() {
+  return new Set(qualifierHistory.map(r => pairKey(qualifierPool.find(a => a.id === r.groupIds[0]), qualifierPool.find(a => a.id === r.groupIds[1]))));
+}
+function chooseQualifierPair() {
+  if (qualifierRedoGroup) {
+    const ids = qualifierRedoGroup; qualifierRedoGroup = null;
+    const pair = ids.map(id => qualifierPool.find(a => a.id === id)).filter(Boolean);
+    if (pair.length === 2) return pair;
+  }
+  const played = qualifierPlayedPairs();
+  const appearances = id => qualifierAppearances.get(id) || 0;
+  const sorted = rankQualifier();
+
+  // 第1段階：全員に最低2回ずつ比較機会を与える。未登場・登場不足を優先する。
+  const underplayed = sorted.filter(a => appearances(a.id) < 2);
+  if (underplayed.length) {
+    const first = [...underplayed].sort((a, b) => appearances(a.id) - appearances(b.id) || Math.random() - 0.5)[0];
+    const opponents = sorted.filter(a => a.id !== first.id && !played.has(pairKey(first, a)) && appearances(a.id) < 3)
+      .sort((a, b) => appearances(a.id) - appearances(b.id) || Math.abs((sorted.indexOf(a)) - (sorted.indexOf(first))) - Math.abs((sorted.indexOf(b)) - (sorted.indexOf(first))));
+    if (opponents.length) return [first, opponents[0]];
+    const fallback = sorted.find(a => a.id !== first.id && !played.has(pairKey(first, a)));
+    if (fallback) return [first, fallback];
+  }
+
+  // 第2段階：16位前後の境界を重点比較。各人の予選登場は最大4回、同じ組み合わせは再利用しない。
+  const boundary = sorted.filter((a, i) => i >= 8 && i <= 23 && appearances(a.id) < 4);
+  const options = [];
+  for (let i = 0; i < boundary.length; i++) for (let j = i + 1; j < boundary.length; j++) {
+    const a = boundary[i], b = boundary[j];
+    if (played.has(pairKey(a, b))) continue;
+    const ia = sorted.findIndex(x => x.id === a.id), ib = sorted.findIndex(x => x.id === b.id);
+    const crossesCut = (ia < 16) !== (ib < 16);
+    const ratingGap = Math.abs((qualifierRatings().get(a.id) || 1000) - (qualifierRatings().get(b.id) || 1000));
+    options.push({ pair: [a, b], score: (crossesCut ? 0 : 100) + ratingGap + (appearances(a.id) + appearances(b.id)) * 5 + Math.abs((ia + ib) / 2 - 15.5) });
+  }
+  options.sort((a, b) => a.score - b.score);
+  if (options.length) return options[0].pair;
+  return null;
+}
+function startQualifier(list) {
+  qualifierPool = uniqueActors(list); qualifierResults = []; qualifierCounts = new Map(qualifierPool.map(a => [a.id, 0])); qualifierAppearances = new Map(qualifierPool.map(a => [a.id, 0])); qualifierQuestion = 0; qualifierHistory = []; qualifierRedoGroup = null; qualifierAnswerLocked = false;
+  stage = "qualifier"; renderQualifier();
+}
+function renderQualifier() {
+  const group = chooseQualifierPair();
+  if (!group || group.length !== 2) {
+    winners = rankQualifier().slice(0, 16);
+    renderPrelimResults();
+    return;
+  }
+  qualifierCurrentGroup = group;
+  comparisonList.innerHTML = "";
+  comparisonList.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
+  comparisonList.style.pointerEvents = qualifierAnswerLocked ? "none" : "";
+  document.getElementById("comparison-title").textContent = "予選：16人に絞り込もう";
+  document.getElementById("comparison-instruction").textContent = "2人のうち、好きな声優を選んでね。選ぶとすぐ次へ進むよ。";
+  prelimActions.hidden = true; finalActions.hidden = true;
+  document.getElementById("previous-button").textContent = "一つ前の比較へ";
+  document.getElementById("previous-button").disabled = qualifierHistory.length === 0;
+  comparisonProgress.textContent = `予選・2択比較 ${qualifierQuestion + 1} 回目（候補 ${qualifierPool.length} 人）`;
+  comparisonMessage.textContent = "全員に最低2回の比較機会を設け、その後は16位前後を重点比較するよ。同じ組み合わせは繰り返さず、各人の登場は最大4回。";
+  group.forEach(actor => {
+    const b = makeActorChoice(actor, false, () => answerQualifier(actor));
+    b.disabled = qualifierAnswerLocked;
+    comparisonList.appendChild(b);
+  });
+}
+function answerQualifier(winner) {
+  if (qualifierAnswerLocked) return;
+  const group = qualifierCurrentGroup;
+  if (!group || !group.some(a => a.id === winner.id)) return;
+  qualifierAnswerLocked = true;
+  const loser = group.find(a => a.id !== winner.id);
+  const result = { winnerId: winner.id, loserIds: [loser.id], groupIds: group.map(a => a.id) };
+  qualifierHistory.push(result);
+  qualifierResults.push({ winnerId: winner.id, loserId: loser.id });
+  result.groupIds.forEach(id => qualifierAppearances.set(id, (qualifierAppearances.get(id) || 0) + 1));
+  qualifierCounts.set(winner.id, (qualifierCounts.get(winner.id) || 0) + 1);
+  qualifierCounts.set(loser.id, (qualifierCounts.get(loser.id) || 0) + 1);
+  qualifierQuestion++;
+  renderQualifier();
+  // 画面更新直後に次のボタンへ飛ぶスマホの二重タップを防ぐ。
+  setTimeout(() => { qualifierAnswerLocked = false; comparisonList.style.pointerEvents = ""; [...comparisonList.querySelectorAll("button")].forEach(b => b.disabled = false); }, 500);
+}
+let replacementTargetId = null;
+function renderPrelimResults() {
+  stage = "prelimResults"; comparisonList.innerHTML = ""; comparisonList.style.gridTemplateColumns = "1fr";
+  const pool = uniqueActors([...winners, ...addedActors]);
+  document.getElementById("comparison-title").textContent = "本戦出場候補";
+  document.getElementById("comparison-instruction").textContent = pool.length < 9 ? `候補は${pool.length}人。あと${9-pool.length}人以上追加してね。` : `本戦候補は ${pool.length} 人。順位はまだつけず、名前だけ確認できるよ。`;
+  comparisonProgress.textContent = "本戦出場候補リスト"; prelimActions.hidden = true; finalActions.hidden = false;
+  document.getElementById("previous-button").textContent = "最初の予選へ戻る"; document.getElementById("previous-button").disabled = false;
+  const list = document.getElementById("prelim-result-list"); list.innerHTML = "";
+  const help = document.createElement("p"); help.className = "candidate-help";
+  help.textContent = pool.length >= 16 ? "候補が16人いるよ。入れ替えたい声優の「入れ替え対象」を選んでから、新しい声優を追加してね。" : "候補が16人未満なら追加できるよ。入れ替えたい場合は、対象を選んでから追加してね。";
+  list.appendChild(help);
+  pool.forEach(actor => {
+    const li = document.createElement("li"); li.className = "candidate-row" + (replacementTargetId === actor.id ? " selected-replacement" : "");
+    const info = document.createElement("div"); info.className = "candidate-info";
+    const name = document.createElement("strong"); name.textContent = actor.name; info.appendChild(name);
+    const credit = document.createElement("div"); credit.className = "candidate-credit"; credit.textContent = actorCreditLabel(actor); info.appendChild(credit);
+    const button = document.createElement("button"); button.type = "button";
+    button.textContent = replacementTargetId === actor.id ? "選択中" : "入れ替え対象";
+    button.setAttribute("aria-pressed", replacementTargetId === actor.id ? "true" : "false");
+    button.addEventListener("click", () => { replacementTargetId = replacementTargetId === actor.id ? null : actor.id; renderPrelimResults(); });
+    li.append(info,button); list.appendChild(li);
+  });
+  const input = document.getElementById("add-actor-input");
+  const addButton = document.getElementById("add-actor-button");
+  input.disabled = false; addButton.disabled = false;
+  input.title = "追加したい声優名を入力"; addButton.title = "入力した声優を追加、または選択した候補と入れ替え";
+  document.getElementById("start-final-button").disabled = pool.length < 9 || pool.length > 16;
+  comparisonMessage.textContent = pool.length > 16 ? "候補が16人を超えているよ。16人以内にしてね。" : "";
+}
+document.getElementById("add-actor-button").addEventListener("click", () => {
+  const input = document.getElementById("add-actor-input"), name = input.value.trim(), pool = uniqueActors([...winners,...addedActors]);
+  if (!name) { comparisonMessage.textContent = "声優名を入力してね。"; return; }
+  if (pool.some(a => a.name.toLocaleLowerCase() === name.toLocaleLowerCase())) { comparisonMessage.textContent = "その声優はすでにリストにいるよ。"; return; }
+  const known = voiceActors.find(a => a.name.toLocaleLowerCase() === name.toLocaleLowerCase());
+  const newActor = known || {id:"manual_"+Date.now()+"_"+Math.random().toString(36).slice(2,8), name};
+  if (replacementTargetId) {
+    const target = pool.find(a => a.id === replacementTargetId);
+    if (!target) { replacementTargetId = null; comparisonMessage.textContent = "入れ替え対象を選び直してね。"; renderPrelimResults(); return; }
+    winners = winners.filter(a => a.id !== target.id);
+    addedActors = addedActors.filter(a => a.id !== target.id);
+    addedActors.push(newActor); replacementTargetId = null;
+    input.value = ""; renderPrelimResults(); comparisonMessage.textContent = `${target.name} を ${name} に入れ替えたよ！`; return;
+  }
+  if (pool.length >= 16) { comparisonMessage.textContent = "候補は最大16人だよ。入れ替え対象を選んでから追加してね。"; return; }
+  addedActors.push(newActor); input.value = ""; renderPrelimResults(); comparisonMessage.textContent = `${name} を追加したよ！`;
+});
+document.getElementById("start-final-button").addEventListener("click", () => {
+  finalPool = uniqueActors([...winners,...addedActors]);
+  if (finalPool.length < 9) { comparisonMessage.textContent = `本戦は最低9人必要だよ。あと${9-finalPool.length}人追加してね。`; return; }
+  if (finalPool.length > 16) { comparisonMessage.textContent = "本戦候補は16人までにしてね。"; return; }
+  finalResults = []; finalCounts = new Map(finalPool.map(a=>[a.id,0])); finalRedoPair = null; finalHistory = []; finalAnswerLocked = false;
+  // 本戦はランダムな順番から二分挿入ソートで全員の順位を組み立てる。
+  // 比較結果を使って順位を決めるため、勝率の単純比較や推移関係の早期終了はしない。
+  finalInsertOrder = shuffle(finalPool);
+  finalSortOrder = finalInsertOrder.length ? [finalInsertOrder[0]] : [];
+  finalInsertIndex = 1; finalCurrentActor = finalInsertOrder[finalInsertIndex] || null;
+  finalLow = 0; finalHigh = finalSortOrder.length; stage = "final"; renderFinal();
+});
+function finalSnapshot() {
+  return { sortOrder: finalSortOrder.map(a=>a.id), insertIndex: finalInsertIndex, low: finalLow, high: finalHigh, currentActorId: finalCurrentActor?.id || null, resultsLength: finalResults.length };
+}
+function restoreFinalSnapshot(snap) {
+  const byId = new Map(finalPool.map(a=>[a.id,a]));
+  finalSortOrder = snap.sortOrder.map(id=>byId.get(id)).filter(Boolean);
+  finalInsertIndex = snap.insertIndex; finalLow = snap.low; finalHigh = snap.high;
+  finalCurrentActor = byId.get(snap.currentActorId) || null;
+  finalResults = finalResults.slice(0, snap.resultsLength);
+  finalCounts = new Map(finalPool.map(a=>[a.id,0]));
+  for (const r of finalResults) { finalCounts.set(r.winnerId,(finalCounts.get(r.winnerId)||0)+1); finalCounts.set(r.loserId,(finalCounts.get(r.loserId)||0)+1); }
+}
+function advanceFinalInsertion() {
+  if (finalLow >= finalHigh) {
+    finalSortOrder.splice(finalLow, 0, finalCurrentActor);
+    finalInsertIndex++;
+    if (finalInsertIndex >= finalInsertOrder.length) { showFinalResult(); return; }
+    finalCurrentActor = finalInsertOrder[finalInsertIndex];
+    finalLow = 0; finalHigh = finalSortOrder.length;
+  }
+  renderFinal();
+}
+function renderFinal() {
+  if (!finalCurrentActor) { showFinalResult(); return; }
+  if (finalLow >= finalHigh) { advanceFinalInsertion(); return; }
+  const mid = Math.floor((finalLow + finalHigh) / 2);
+  const comparedActor = finalSortOrder[mid];
+  finalCurrentPair = [finalCurrentActor, comparedActor];
+  comparisonList.innerHTML=""; comparisonList.style.gridTemplateColumns="repeat(2, minmax(0, 1fr))"; comparisonList.style.pointerEvents=finalAnswerLocked ? "none" : "";
+  document.getElementById("comparison-title").textContent="本戦：順位を決めよう";
+  document.getElementById("comparison-instruction").textContent="2人のうち好きな声優を選んでね。選んだ方を基準に順位を組み立てていくよ。";
+  prelimActions.hidden=true; finalActions.hidden=true;
+  document.getElementById("previous-button").textContent="一つ前の比較へ";
+  document.getElementById("previous-button").disabled=finalHistory.length===0;
+  comparisonProgress.textContent=`本戦・比較 ${finalResults.length+1} 回目（順位決定中 ${finalInsertIndex}/${finalInsertOrder.length} 人目）`;
+  comparisonMessage.textContent="本戦は候補者を順番に比較し、二分挿入で順位を決めるよ。勝率だけで並べず、全員の順位が決まるまで比較を続けるよ。";
+  finalCurrentPair.forEach(actor=>{const b=makeActorChoice(actor,false,()=>answerFinal(actor));b.disabled=finalAnswerLocked;comparisonList.appendChild(b);});
+}
+function answerFinal(winner) {
+  if (finalAnswerLocked || !finalCurrentPair || !finalCurrentPair.some(a=>a.id===winner.id)) return;
+  finalAnswerLocked = true;
+  finalHistory.push(finalSnapshot());
+  const [currentActor, comparedActor] = finalCurrentPair;
+  const loser = finalCurrentPair.find(a=>a.id!==winner.id);
+  finalResults.push({winnerId:winner.id,loserId:loser.id,pairIds:finalCurrentPair.map(a=>a.id)});
+  finalCounts.set(winner.id,(finalCounts.get(winner.id)||0)+1); finalCounts.set(loser.id,(finalCounts.get(loser.id)||0)+1);
+  // 比較中の声優が選ばれたら、すでに並んでいる人より上に入る範囲を探す。
+  if (winner.id === currentActor.id) finalHigh = Math.floor((finalLow + finalHigh) / 2);
+  else finalLow = Math.floor((finalLow + finalHigh) / 2) + 1;
+  advanceFinalInsertion();
+  setTimeout(() => { finalAnswerLocked = false; comparisonList.style.pointerEvents = ""; [...comparisonList.querySelectorAll("button")].forEach(b => b.disabled = false); }, 450);
+}
+function showFinalResult() {
+  const actors=finalSortOrder.slice(0,9); resultList.innerHTML="";
+  document.getElementById("share-message").textContent = "";
+  resultList.classList.add("result-grid");
+  const visualOrder = [3,4,5,1,0,2,6,7,8];
+  visualOrder.forEach(rankIndex=>{const actor=actors[rankIndex];if(!actor)return;const item=document.createElement("li");item.className=`result-card rank-${rankIndex+1}`;if(rankIndex===0){const crown=document.createElement("span");crown.className="result-crown";crown.textContent="♛";item.appendChild(crown);}const rank=document.createElement("span");rank.className="result-rank";rank.textContent=`${rankIndex+1}位`;const name=document.createElement("span");name.className="result-name";name.textContent=actor.name;const credit=document.createElement("span");credit.className="result-credit";credit.textContent=actorCreditLabel(actor);item.append(rank,name,credit);resultList.appendChild(item);});
+  document.querySelector("#result-screen .help-text").textContent=`本戦で行った比較結果から順位を組み立てたよ。実際の比較は${finalResults.length}回。`;
+  stage="result";showScreen("result");
+}
+let activeWorkRow = "すべて";
+function workRowFor(work) {
+  const reading = String(work.reading || "").trim();
+  const ch = reading.charAt(0);
+  if ("あいうえお".includes(ch)) return "あ行";
+  if ("かきくけこがぎぐげご".includes(ch)) return "か行";
+  if ("さしすせそざじずぜぞ".includes(ch)) return "さ行";
+  if ("たちつてとだぢづでど".includes(ch)) return "た行";
+  if ("なにぬねの".includes(ch)) return "な行";
+  if ("はひふへほばびぶべぼぱぴぷぺぽ".includes(ch)) return "は行";
+  if ("まみむめも".includes(ch)) return "ま行";
+  if ("やゆよ".includes(ch)) return "や行";
+  if ("らりるれろ".includes(ch)) return "ら行";
+  if ("わをん".includes(ch)) return "わ行";
+  return "その他";
+}
+function renderWorks() {
+  const filter = document.getElementById("work-filter"); filter.innerHTML = "";
+  const rows = ["すべて","あ行","か行","さ行","た行","な行","は行","ま行","や行","ら行","わ行","その他"];
+  rows.forEach(row=>{const b=document.createElement("button");b.type="button";b.textContent=row;b.className=activeWorkRow===row?"active":"";b.setAttribute("aria-pressed",activeWorkRow===row?"true":"false");b.addEventListener("click",()=>{activeWorkRow=row;renderWorks();});filter.appendChild(b);});
+  workList.innerHTML="";
+  const visibleWorks=works.filter(work=>activeWorkRow==="すべて"||workRowFor(work)===activeWorkRow);
+  visibleWorks.forEach(work=>{const label=document.createElement("label");label.className="work-item";const cb=document.createElement("input");cb.type="checkbox";cb.value=work.id;cb.checked=selectedWorkIds.has(work.id);cb.addEventListener("change",()=>{if(cb.checked)selectedWorkIds.add(work.id);else selectedWorkIds.delete(work.id);});const name=document.createElement("span");name.textContent=work.name;label.append(cb,name);workList.appendChild(label);});
+  workMessage.textContent=works.length?`${visibleWorks.length}作品を表示中`:"公開用の作品データがまだ登録されていないよ。";
+}
+document.getElementById("begin-button").addEventListener("click", () => showScreen("mode"));
+document.getElementById("mode-back-button").addEventListener("click", () => showScreen("home"));
+document.querySelectorAll(".mode-button").forEach(button=>button.addEventListener("click",()=>{
+  const mode=button.dataset.mode; currentMode = mode; selectedWorkIds = new Set();
+  if(mode==="work"){renderWorks();showScreen("work");return;}
+  if(mode==="regular"){const ids=new Set(standardVoiceActors);resetRun(voiceActors.filter(a=>ids.has(a.id)));return;}
+  if(mode==="all"){resetRun(voiceActors.filter(a=>a.showInList === "T"));}
+}));
+document.getElementById("start-work-button").addEventListener("click",()=>{
+  const selected=new Set(selectedWorkIds);
+  if(!selected.size){workMessage.textContent="作品を1つ以上選んでね。";return;}
+  selectedWorkIds = selected; currentMode = "work";
+  const actorIds=new Set(characters.filter(c=>selected.has(c.workId)).map(c=>c.voiceActorId));const actors=voiceActors.filter(a=>actorIds.has(a.id));
+  if(actors.length<2){workMessage.textContent="選んだ作品の出演声優データが足りないよ。characters のデータを確認してね。";return;}resetRun(actors);
+});
+nextButton.addEventListener("click",()=>{if(stage==="prelim")finishPrelimGroup();});
+document.getElementById("previous-button").addEventListener("click",()=>{
+  if(stage==="prelimResults"){groupIndex=0;winners=[];addedActors=[];groupSelections=[];renderGroup();}
+  else if(stage==="prelim"&&groupIndex>0){groupIndex--;renderGroup();}
+  else if(stage==="qualifier"&&qualifierHistory.length){qualifierAnswerLocked=false;const prev=qualifierHistory.pop();qualifierResults.pop();qualifierCounts.set(prev.winnerId,Math.max(0,(qualifierCounts.get(prev.winnerId)||0)-1));prev.loserIds.forEach(id=>qualifierCounts.set(id,Math.max(0,(qualifierCounts.get(id)||0)-1)));prev.groupIds.forEach(id=>qualifierAppearances.set(id,Math.max(0,(qualifierAppearances.get(id)||0)-1)));qualifierQuestion--;qualifierRedoGroup=prev.groupIds;renderQualifier();}
+  else if(stage==="final"&&finalHistory.length){const snap=finalHistory.pop();restoreFinalSnapshot(snap);renderFinal();}
+});
+document.querySelectorAll("[data-back]").forEach(b=>b.addEventListener("click",()=>showScreen("mode")));
+document.getElementById("restart-button").addEventListener("click",()=>showScreen("mode"));
+function getResultRows() {
+  const cards = [...resultList.querySelectorAll(".result-card")];
+  return cards.map(card => ({rank: card.querySelector(".result-rank")?.textContent || "", name: card.querySelector(".result-name")?.textContent || ""})).sort((a,b)=>parseInt(a.rank,10)-parseInt(b.rank,10));
+}
+function drawResultImage() {
+  const rows = getResultRows();
+  const canvas = document.createElement("canvas"); canvas.width = 1200; canvas.height = 1200;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#fff8fc"; ctx.fillRect(0,0,1200,1200);
+  const cuteFont = '"Hiragino Maru Gothic ProN", "Yu Gothic", "Meiryo", sans-serif';
+  // タイトルはそのまま、左右に小さなハートときらきらを添える。
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillStyle = "#b85d87"; ctx.font = `bold 62px ${cuteFont}`; ctx.fillText("♡好き声9選♡",600,52);
+  ctx.fillStyle = "#e7a6c1"; ctx.font = `24px ${cuteFont}`;
+  ctx.fillText("✧", 360, 48); ctx.fillText("✧", 840, 48);
+  ctx.font = `20px ${cuteFont}`; ctx.fillText("♡", 320, 66); ctx.fillText("♡", 880, 66);
+  const palette = {1:{bg:"#fff0c2",border:"#d7af55",fg:"#80591b"},2:{bg:"#ddf3e8",border:"#b7e0cc",fg:"#367d61"},3:{bg:"#dceeff",border:"#b5d7f4",fg:"#3975a8"},4:{bg:"#f9e3ed",border:"#edc8d9",fg:"#a84d74"},5:{bg:"#f9e3ed",border:"#edc8d9",fg:"#a84d74"},6:{bg:"#f9e3ed",border:"#edc8d9",fg:"#a84d74"},7:{bg:"#f0e5fa",border:"#ddc8ef",fg:"#8656a5"},8:{bg:"#f0e5fa",border:"#ddc8ef",fg:"#8656a5"},9:{bg:"#f0e5fa",border:"#ddc8ef",fg:"#8656a5"}};
+  const pos = [3,4,5,1,0,2,6,7,8];
+  const x0=56,y0=100,gap=18,cell=(1200-x0*2-gap*2)/3;
+  function drawCrown(cx, cy, scale=1) {
+    // シンプルな線画の王冠。塗りや宝石を省いて、淡いカードになじませる。
+    ctx.save(); ctx.translate(cx,cy); ctx.scale(scale,scale);
+    ctx.lineWidth=3.2; ctx.lineCap="round"; ctx.lineJoin="round";
+    ctx.strokeStyle="#bd842a"; ctx.fillStyle="rgba(255,240,194,0.18)";
+    ctx.beginPath();
+    ctx.moveTo(-28,8); ctx.lineTo(-34,-15); ctx.lineTo(-14,-3); ctx.lineTo(0,-25);
+    ctx.lineTo(14,-3); ctx.lineTo(34,-15); ctx.lineTo(28,8); ctx.closePath();
+    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-28,8); ctx.quadraticCurveTo(0,14,28,8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-25,14); ctx.quadraticCurveTo(0,20,25,14); ctx.stroke();
+    ctx.restore();
+  }
+  pos.forEach((rankIndex,slot)=>{
+    const row=rows[rankIndex]; if(!row)return;
+    const col=slot%3,r=Math.floor(slot/3),x=x0+col*(cell+gap),y=y0+r*(cell+gap),rank=rankIndex+1,p=palette[rank];
+    // カード背景と外枠。1位だけゴールドの二重枠で少し特別に。
+    ctx.fillStyle=p.bg;ctx.strokeStyle=p.border;ctx.lineWidth=rank===1?6:3;ctx.beginPath();ctx.roundRect(x,y,cell,cell,24);ctx.fill();ctx.stroke();
+    ctx.strokeStyle=rank===1?"#e9c36d":"#ffffffb8";ctx.lineWidth=rank===1?2:1.5;ctx.beginPath();ctx.roundRect(x+10,y+10,cell-20,cell-20,18);ctx.stroke();
+    // B案：四隅のハートはなくし、上下中央に小さなきらきらをひとつずつ。
+    ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle=rank===1?"#d6a64e":p.border;
+    ctx.font=`${rank===1?25:22}px ${cuteFont}`;
+    ctx.fillText("✧",x+cell/2,y+27);
+    ctx.fillText("✧",x+cell/2,y+cell-27);
+    const name=String(row.name);let fontSize=rank===1?43:40;ctx.font=`bold ${fontSize}px ${cuteFont}`;
+    while(ctx.measureText(name).width>cell-30 && fontSize>24){fontSize-=2;ctx.font=`bold ${fontSize}px ${cuteFont}`;}
+    const maxWidth=cell-30;const words=[...name];let lines=[],line="";
+    for(const ch of words){if(ctx.measureText(line+ch).width>maxWidth&&line){lines.push(line);line=ch;}else line+=ch;}if(line)lines.push(line);
+    if(lines.length>2){lines=[lines[0],lines.slice(1).join("").slice(0,10)+"…"];}
+    // 順位と名前をひとまとまりにして、マスの縦中央に配置。
+    const lineHeight=fontSize*1.22;
+    const crownHeight=rank===1?38:0;
+    const rankHeight=rank===1?39:35;
+    const gapAfterCrown=rank===1?0:0;
+    const gapAfterRank=10;
+    const nameHeight=lines.length*lineHeight;
+    const totalHeight=crownHeight+gapAfterCrown+rankHeight+gapAfterRank+nameHeight;
+    let cursorY=y+(cell-totalHeight)/2;
+    if(rank===1){drawCrown(x+cell/2,cursorY+21,0.78);cursorY+=crownHeight+gapAfterCrown;}
+    ctx.fillStyle=p.fg;ctx.textAlign="center";ctx.textBaseline="middle";ctx.font=`bold ${rank===1?31:29}px ${cuteFont}`;ctx.fillText(`${rank}位`,x+cell/2,cursorY+rankHeight/2);cursorY+=rankHeight+gapAfterRank;
+    ctx.font=`bold ${fontSize}px ${cuteFont}`;
+    lines.forEach((ln,i)=>ctx.fillText(ln,x+cell/2,cursorY+lineHeight*(i+0.5)));
+  });
+  return canvas;
+}
+function getShareBaseUrl() { return window.location.href.split("#")[0]; }
+function shareText(imageMode) {
+  const player=document.getElementById("player-name").value.trim();
+  const rows=getResultRows();
+  const baseUrl=getShareBaseUrl();
+  if(imageMode){const prefix=player?`${player}の好き声9選🗣️⭐️`:`私の好き声9選🗣️⭐️`;return `${prefix}
+
+#男性声優好き声9選
+${baseUrl}`;}
+  const ranking=rows.map((row,i)=>`${i+1}位　${row.name}`).join("\n");
+  return `♡好き声9選♡
+
+${ranking}
+
+#男性声優好き声9選
+${baseUrl}`;
+}
+function openXShare(text) {
+  const baseUrl=getShareBaseUrl();
+  if (!/^https?:\/\//i.test(baseUrl)) { document.getElementById("share-message").textContent="X共有はサイト公開後に使えるよ。いまは投稿文をコピーして確認できるよ。"; GenUICopyFallback(text); return false; }
+  window.open("https://x.com/intent/tweet?"+new URLSearchParams({text}).toString(),"_blank","noopener,noreferrer");
+  return true;
+}
+function GenUICopyFallback(text) { if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(()=>{}); }
+document.getElementById("save-result-image-button").addEventListener("click",()=>{
+  const canvas=drawResultImage(); const link=document.createElement("a"); link.download="好き声9選.png"; link.href=canvas.toDataURL("image/png"); link.click();
+  document.getElementById("share-message").textContent="結果画像を保存したよ！ Xで共有するときに画像を添付してね。";
+});
+document.getElementById("share-image-x-button").addEventListener("click",()=>{
+  const canvas=drawResultImage(); const link=document.createElement("a"); link.download="好き声9選.png"; link.href=canvas.toDataURL("image/png"); link.click();
+  const opened=openXShare(shareText(true));
+  if(opened) document.getElementById("share-message").textContent="画像を保存してXを開いたよ！ 投稿画面で保存した画像を添付してね。";
+});
+document.getElementById("share-text-x-button").addEventListener("click",()=>{
+  const opened=openXShare(shareText(false));
+  if(opened) document.getElementById("share-message").textContent="順位と声優名入りの投稿文でXを開いたよ！";
+});
+document.getElementById("result-back-button").addEventListener("click",()=>showScreen("home"));
+
+  </script>
+</body>
+</html>
