@@ -345,6 +345,12 @@
       .panel { padding: 20px; }
       #comparison-list { grid-template-columns: 1fr; }
     }
+    .aggregate-box { margin-top: 26px; padding: 18px; border: 1px solid #edcddd; border-radius: 14px; background: #fffafd; }
+    .aggregate-box h3 { margin-top: 0; }
+    .aggregate-box button { margin: 4px 6px 4px 0; }
+    .aggregate-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+    .aggregate-table th, .aggregate-table td { padding: 8px; border-bottom: 1px solid #f0dce6; text-align: left; }
+    .aggregate-table th { color: #a34f7a; }
   </style>
 </head>
 <body>
@@ -433,12 +439,21 @@
       </div>
       <p class="share-note">「結果画像を保存」で画像を保存してね。「結果を共有」では順位と声優名入りの投稿文でXを開くよ。画像も載せたいときは、Xの投稿画面で保存した画像を添付してね。</p>
       <p id="share-message" class="help-text" aria-live="polite"></p>
+      <section class="aggregate-box" aria-labelledby="aggregate-title">
+        <h3 id="aggregate-title">みんなの好き声集計</h3>
+        <p class="help-text">参加は任意だよ。参加すると、名前を含めず、選んだモードと声優IDの順位（1〜9位）だけを集計に送信します。送信後の個別データ削除はできません。集計は匿名の自己申告で、正確性を保証するものではありません。</p>
+        <button class="secondary-button" id="submit-aggregate-button" type="button">集計に参加</button>
+        <button class="secondary-button" id="view-aggregate-button" type="button">みんなの集計を見る</button>
+        <p id="aggregate-message" class="help-text" aria-live="polite"></p>
+        <div id="aggregate-results" hidden></div>
+      </section>
       <button class="back-button" id="result-back-button">最初に戻る</button>
     </section>
   </main>
 
   <footer>あなたの「好き声」を見つけるソート<br>非公式のファン制作企画です。各作品・出演者の公式とは関係ありません。掲載情報には誤りや更新遅れが含まれる場合があります。</footer>
 
+  <script src="supabase-config.js"></script>
   <script src="data.js"></script>
   <script>
 const screens = {
@@ -1005,6 +1020,75 @@ document.getElementById("share-result-button").addEventListener("click",()=>{
   if(opened) document.getElementById("share-message").textContent="順位と声優名入りの投稿文でXを開いたよ！ 画像も載せたいときは保存した画像を添付してね。";
 });
 document.getElementById("result-back-button").addEventListener("click",()=>showScreen("home"));
+
+// Optional anonymous aggregation via Supabase RPC. Names are never sent.
+const SUPABASE_CFG = window.SUKIGOE_SUPABASE || {};
+const actorNameById = new Map((voiceActors || []).map(a => [a.id, a.name]));
+function supabaseConfigured() {
+  return SUPABASE_CFG.url && SUPABASE_CFG.anonKey &&
+    !String(SUPABASE_CFG.url).includes("PASTE_") && !String(SUPABASE_CFG.anonKey).includes("PASTE_");
+}
+async function supabaseRpc(fn, body) {
+  if (!supabaseConfigured()) throw new Error("SupabaseのURLと公開キーがまだ設定されていません。設定手順ファイルを確認してね。");
+  const base = String(SUPABASE_CFG.url).replace(/\/$/, "");
+  const response = await fetch(`${base}/rest/v1/rpc/${fn}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "apikey": SUPABASE_CFG.anonKey, "Authorization": `Bearer ${SUPABASE_CFG.anonKey}` },
+    body: JSON.stringify(body)
+  });
+  if (!response.ok) {
+    let detail = ""; try { detail = await response.text(); } catch (_) {}
+    throw new Error(`Supabaseからエラーが返りました (${response.status}) ${detail.slice(0,180)}`);
+  }
+  return response.json();
+}
+document.getElementById("submit-aggregate-button").addEventListener("click", async () => {
+  const message = document.getElementById("aggregate-message");
+  const button = document.getElementById("submit-aggregate-button");
+  if (!confirm("集計に参加しますか？\n\n名前は送信せず、モードと声優IDの順位だけを送信します。送信後、個別データの取り消しはできません。")) return;
+  const rows = (finalSortOrder || []).slice(0,9);
+  if (rows.length !== 9 || new Set(rows.map(a=>a.id)).size !== 9) { message.textContent = "9人の順位が確認できないため、送信できませんでした。"; return; }
+  if (rows.some(a => !/^[A-Za-z0-9_-]{1,80}$/.test(String(a.id)))) { message.textContent = "追加した声優のID形式が集計に対応していません。"; return; }
+  const submittedKey = "sukigoe-aggregate-submitted-v1";
+  if (localStorage.getItem(submittedKey)) { message.textContent = "このブラウザからはすでに集計に参加しています。"; return; }
+  button.disabled = true; message.textContent = "集計に送信中…";
+  try {
+    await supabaseRpc("submit_sukigoe_result", { p_mode: currentMode, p_rankings: rows.map(a=>a.id) });
+    localStorage.setItem(submittedKey, "1");
+    message.textContent = "参加ありがとう！名前を送らずに順位データを送信したよ。";
+  } catch (error) {
+    message.textContent = error.message || "送信できませんでした。設定を確認してね。";
+    button.disabled = false;
+  }
+});
+document.getElementById("view-aggregate-button").addEventListener("click", async () => {
+  const box = document.getElementById("aggregate-results");
+  const message = document.getElementById("aggregate-message");
+  const button = document.getElementById("view-aggregate-button");
+  button.disabled = true; message.textContent = "集計を読み込み中…";
+  try {
+    const data = await supabaseRpc("get_sukigoe_stats", {});
+    const total = Number(data.submission_count || 0);
+    let html = `<h4>全体の好き声ランキング</h4><p>集計参加：${total}件</p>`;
+    if (!total) html += `<p>まだ集計データがないよ。最初の参加者になってね！</p>`;
+    else {
+      const first = (data.first_place || []).slice(0,30);
+      html += `<table class="aggregate-table"><thead><tr><th>順位</th><th>声優</th><th>1位の回数</th></tr></thead><tbody>` + first.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(actorNameById.get(r.actor_id) || r.actor_id)}</td><td>${Number(r.count)}</td></tr>`).join("") + `</tbody></table>`;
+      html += `<h4>1位別・一緒に選ばれた声優</h4><p class="help-text">各1位の投稿で、2〜9位にも登場した割合。少数データでは傾向が偏ることがあります。</p>`;
+      const firstIds = [...new Set((data.companions || []).map(r=>r.first_actor_id))];
+      html += firstIds.map(id => {
+        const group = (data.companions || []).filter(r=>r.first_actor_id===id && r.other_actor_id!==id).sort((a,b)=>Number(b.count)-Number(a.count)).slice(0,8);
+        if (!group.length) return "";
+        return `<h5>${escapeHtml(actorNameById.get(id) || id)} が1位のとき</h5><table class="aggregate-table"><thead><tr><th>声優</th><th>人数</th><th>割合</th></tr></thead><tbody>` + group.map(r=>`<tr><td>${escapeHtml(actorNameById.get(r.other_actor_id) || r.other_actor_id)}</td><td>${Number(r.count)}</td><td>${Number(r.percent).toFixed(1)}%</td></tr>`).join("") + `</tbody></table>`;
+      }).join("");
+    }
+    box.innerHTML = html; box.hidden = false; message.textContent = "集計を表示したよ。";
+  } catch (error) { message.textContent = error.message || "集計を読み込めませんでした。"; }
+  finally { button.disabled = false; }
+});
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
 
   </script>
 </body>
