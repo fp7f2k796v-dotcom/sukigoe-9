@@ -243,6 +243,9 @@
     .credit-character { display: inline; color: #725d6e; }
     .choice-button .actor-credit { text-align: left; }
     .result-credit { font-size: 10px; line-height: 1.35; color: #927b8c; font-weight: normal; }
+    .result-image-wrap { width: 100%; max-width: 600px; margin: 18px auto 24px; }
+    .result-image-preview { display: block; width: 100%; height: auto; border-radius: 12px; }
+    #result-list[hidden] { display: none !important; }
     .share-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
     .share-row input { flex: 1; min-width: 160px; padding: 12px; border: 1px solid #ecd5e2; border-radius: 10px; font: inherit; }
     .share-note { font-size: 12px; line-height: 1.7; color: #988693; }
@@ -417,16 +420,18 @@
     <section class="panel" id="result-screen" hidden>
       <h2>好き声9選ソート結果</h2>
       <p class="help-text">選んだ声優の中から決まったTOP9だよ。</p>
-      <ol id="result-list" class="result-grid"></ol>
+      <ol id="result-list" class="result-grid" hidden></ol>
+      <div class="result-image-wrap">
+        <img id="result-image-preview" class="result-image-preview" alt="好き声9選の順位結果画像">
+      </div>
       <h3>結果をシェアしよう！</h3>
       <label class="help-text" for="player-name">ポストに表示する名前（任意）</label>
       <div class="share-row">
         <input id="player-name" type="text" maxlength="40" placeholder="名前を入力（空欄でもOK）">
         <button class="secondary-button" id="save-result-image-button">結果画像を保存</button>
-        <button class="primary-button" id="share-image-x-button">画像付きで共有</button>
-        <button class="secondary-button" id="share-text-x-button">文字だけで共有</button>
+        <button class="primary-button" id="share-result-button">結果を共有</button>
       </div>
-      <p class="share-note">画像付きは画像を保存してからXを開くよ。Xの投稿画面で画像を添付してね。文字だけなら順位と声優名が投稿文に入るよ。</p>
+      <p class="share-note">「結果画像を保存」で画像を保存してね。「結果を共有」では順位と声優名入りの投稿文でXを開くよ。画像も載せたいときは、Xの投稿画面で保存した画像を添付してね。</p>
       <p id="share-message" class="help-text" aria-live="polite"></p>
       <button class="back-button" id="result-back-button">最初に戻る</button>
     </section>
@@ -849,6 +854,7 @@ function showFinalResult() {
   resultList.classList.add("result-grid");
   const visualOrder = [3,4,5,1,0,2,6,7,8];
   visualOrder.forEach(rankIndex=>{const actor=actors[rankIndex];if(!actor)return;const item=document.createElement("li");item.className=`result-card rank-${rankIndex+1}`;if(rankIndex===0){const crown=document.createElement("span");crown.className="result-crown";crown.textContent="♛";item.appendChild(crown);}const rank=document.createElement("span");rank.className="result-rank";rank.textContent=`${rankIndex+1}位`;const name=document.createElement("span");name.className="result-name";name.textContent=actor.name;const credit=document.createElement("span");credit.className="result-credit";credit.textContent=actorCreditLabel(actor);item.append(rank,name,credit);resultList.appendChild(item);});
+  document.getElementById("result-image-preview").src = drawResultImage().toDataURL("image/png");
   document.querySelector("#result-screen .help-text").textContent=`本戦で行った比較結果から順位を組み立てたよ。実際の比較は${finalResults.length}回。`;
   stage="result";showScreen("result");
 }
@@ -994,14 +1000,9 @@ document.getElementById("save-result-image-button").addEventListener("click",()=
   const canvas=drawResultImage(); const link=document.createElement("a"); link.download="好き声9選.png"; link.href=canvas.toDataURL("image/png"); link.click();
   document.getElementById("share-message").textContent="結果画像を保存したよ！ Xで共有するときに画像を添付してね。";
 });
-document.getElementById("share-image-x-button").addEventListener("click",()=>{
-  const canvas=drawResultImage(); const link=document.createElement("a"); link.download="好き声9選.png"; link.href=canvas.toDataURL("image/png"); link.click();
-  const opened=openXShare(shareText(true));
-  if(opened) document.getElementById("share-message").textContent="画像を保存してXを開いたよ！ 投稿画面で保存した画像を添付してね。";
-});
-document.getElementById("share-text-x-button").addEventListener("click",()=>{
+document.getElementById("share-result-button").addEventListener("click",()=>{
   const opened=openXShare(shareText(false));
-  if(opened) document.getElementById("share-message").textContent="順位と声優名入りの投稿文でXを開いたよ！";
+  if(opened) document.getElementById("share-message").textContent="順位と声優名入りの投稿文でXを開いたよ！ 画像も載せたいときは保存した画像を添付してね。";
 });
 document.getElementById("result-back-button").addEventListener("click",()=>showScreen("home"));
 
