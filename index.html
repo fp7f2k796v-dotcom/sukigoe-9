@@ -975,7 +975,8 @@ function shareText(imageMode) {
 #男性声優好き声9選
 ${baseUrl}`;}
   const ranking=rows.map((row,i)=>`${i+1}位　${row.name}`).join("\n");
-  return `♡好き声9選♡
+  const title=player?`${player}の好き声9選`:`♡好き声9選♡`;
+  return `${title}
 
 ${ranking}
 
