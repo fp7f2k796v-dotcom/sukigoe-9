@@ -1,0 +1,40 @@
+
+name: Update site data from Excel
+
+on:
+  push:
+    paths:
+      - "好き声.xlsx"
+      - "convert_excel.py"
+      - ".github/workflows/update-data.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install openpyxl
+
+      - name: Generate data.js
+        run: python convert_excel.py
+
+      - name: Commit updated data.js
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.js
+          git diff --cached --quiet || git commit -m "Update site data from Excel"
+          git push
