@@ -341,9 +341,14 @@
       .mode-title-row { align-items: flex-start; flex-direction: column; gap: 5px; }
       .mode-description { align-self: flex-start; }
     }
+    @media (max-width: 600px) {
+      /* スマホでは代表作がはみ出さないよう、声優カードを1列にする */
+      #comparison-list { grid-template-columns: minmax(0, 1fr) !important; }
+      #comparison-list .choice-button { min-width: 0; }
+    }
+
     @media (max-width: 420px) {
       .panel { padding: 20px; }
-      #comparison-list { grid-template-columns: 1fr; }
     }
     .aggregate-box { margin-top: 26px; padding: 18px; border: 1px solid #edcddd; border-radius: 14px; background: #fffafd; }
     .aggregate-box h3 { margin-top: 0; }
