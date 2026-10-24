@@ -47,7 +47,7 @@ def main():
         raise SystemExit(f"Excelファイルが見つかりません: {INPUT_FILE}（リポジトリ直下に置いてください）")
 
     wb = load_workbook(path, data_only=True, read_only=True)
-    required = ["作品一覧", "声優一覧", "キャラクター名", "定番声優一覧"]
+    required = ["作品一覧", "声優一覧", "声優50音順", "キャラクター名", "定番声優一覧"]
     missing = [name for name in required if name not in wb.sheetnames]
     if missing:
         raise SystemExit("必要なシートがありません: " + ", ".join(missing))
@@ -56,6 +56,8 @@ def main():
     actor_rows = rows_as_dicts(wb["声優一覧"])
     appearance_rows = rows_as_dicts(wb["キャラクター名"])
     standard_rows = rows_as_dicts(wb["定番声優一覧"])
+    kana_rows = rows_as_dicts(wb["声優50音順"])
+    actor_readings = {clean(row.get("声優名")): clean(row.get("読み仮名")) for row in kana_rows if clean(row.get("声優名")) and clean(row.get("読み仮名"))}
 
     works = []
     work_names = {}
@@ -73,9 +75,19 @@ def main():
             continue
         actor_names[aid] = name
         actor = {"id": aid, "name": name, "showInList": clean(row.get("声優一覧に表示")) or "T"}
+        reading = actor_readings.get(name, "")
+        if reading:
+            actor["reading"] = reading
         reps = parse_representative_works(row.get("代表作"))
         if reps:
             actor["representativeWorks"] = reps
+        sample_url = clean(row.get("サンプルボイスURL"))
+        sample_label = clean(row.get("表記"))
+        if sample_url:
+            actor["sampleVoiceUrl"] = sample_url
+        if sample_label:
+            # Internal URL/anchor hint only; never render this value in the player UI.
+            actor["sampleVoiceLabel"] = sample_label
         voice_actors.append(actor)
 
     characters = []
@@ -114,7 +126,7 @@ def main():
         "const standardVoiceActors = " + json.dumps(standard_voice_actors, ensure_ascii=False, separators=(",", ":")) + ";\n"
     )
     Path(OUTPUT_FILE).write_text(output, encoding="utf-8")
-    print(f"data.js を生成しました：作品 {len(works)}件 / 声優 {len(voice_actors)}人 / 出演関係 {len(characters)}件 / 定番声優 {len(standard_voice_actors)}人")
+    print(f"data.js を生成しました：作品 {len(works)}件 / 声優 {len(voice_actors)}人（読み仮名 {sum(bool(a.get('reading')) for a in voice_actors)}人） / 出演関係 {len(characters)}件 / 定番声優 {len(standard_voice_actors)}人")
 
 
 if __name__ == "__main__":
