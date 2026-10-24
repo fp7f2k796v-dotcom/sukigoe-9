@@ -370,42 +370,62 @@
       .panel { padding: 20px; }
     }
 
-    /* PC版のみ：以前の「アイコン左・名前と出演情報右」のコンパクトな配置に戻す */
+    /* PC版のみ：横長カード。アイコンを左、名前と作品・キャラクター情報を右に配置し、余白はゆったり */
     @media (min-width: 601px) {
-      /* PC版：アイコンを左、声優名と作品情報を右に。余白は参考画像に合わせてゆったり維持 */
-      .actor-choice-card { padding: 12px; gap: 8px; }
+      .actor-choice-item { gap: 10px; }
+      .actor-choice-card { padding: 18px; gap: 10px; }
       .actor-choice-card .choice-button {
-        display: grid !important;
-        grid-template-columns: 56px minmax(0, 1fr) !important;
-        grid-template-rows: auto auto !important;
-        grid-template-areas: "avatar name" "avatar credit" !important;
-        column-gap: 14px !important;
-        row-gap: 10px !important;
-        align-items: start;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0 !important;
+        padding: 0 !important;
       }
-      .actor-choice-card .actor-choice-layout { display: contents !important; }
+      .actor-choice-card .actor-choice-layout {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 14px !important;
+        width: 100%;
+      }
       .actor-choice-card .actor-avatar {
-        grid-area: avatar !important;
-        width: 56px; height: 56px; flex-basis: 56px; border-radius: 15px;
-        margin-top: 1px;
+        flex: 0 0 56px !important;
+        width: 56px !important;
+        height: 56px !important;
+        border-radius: 16px;
       }
       .actor-choice-card .actor-choice-copy {
-        grid-area: name !important;
+        flex: 1 1 auto !important;
         min-width: 0;
-        align-self: center;
       }
-      .actor-choice-card .actor-button-name { display: block; overflow-wrap: anywhere; }
+      .actor-choice-card .actor-button-name {
+        display: block;
+        font-size: 20px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
       .actor-choice-card .actor-credit {
-        grid-area: credit !important;
-        width: 100%;
+        box-sizing: border-box;
+        width: calc(100% - 70px) !important;
         min-width: 0;
-        min-height: 76px;
-        margin: 0 !important;
+        min-height: 0;
+        margin: 8px 0 0 70px !important;
         padding: 0 !important;
-        line-height: 1.55;
+        font-size: 14px;
+        line-height: 1.65;
       }
-      .actor-choice-card .credit-work { display: block; width: fit-content; max-width: 100%; margin: 2px 0 4px; padding: 4px 7px; }
-      .actor-choice-card .credit-character { display: block; margin: 0 0 8px; }
+      .actor-choice-card .credit-work {
+        display: block;
+        width: fit-content;
+        max-width: 100%;
+        margin: 3px 0 5px;
+        padding: 4px 8px;
+        overflow-wrap: anywhere;
+      }
+      .actor-choice-card .credit-character {
+        display: block;
+        margin: 0 0 10px;
+      }
     }
 
     /* スマホ版だけカードとサンプルボタンの間隔をコンパクトにする */
@@ -498,7 +518,7 @@
       <h2 id="comparison-title">予選：どの声が好き？</h2>
       <p id="comparison-progress" class="help-text"></p>
       <p id="comparison-instruction" class="help-text">好きな声優をタップしてね。</p>
-      <p class="help-text sample-link-note">「🎧 サンプルボイス」を押すと、公式プロフィールのサンプルボイスページに移動します。公式URLがない場合は「▶︎ YouTubeで探す」が表示されます。</p>
+      <p class="help-text sample-link-note">「🎧 ボイスサンプル」を押すと、公式プロフィールのボイスサンプルページに移動します。公式URLがない場合は「▶︎ YouTubeで探す」が表示されます。</p>
       <div id="comparison-list"></div>
       <p id="comparison-message" class="help-text"></p>
       <div id="prelim-actions">
@@ -687,12 +707,12 @@ function makeActorChoice(actor, selected, onChoose) {
   const sample = document.createElement("a"); sample.className = "sample-link"; sample.target = "_blank"; sample.rel = "noopener noreferrer";
   const officialUrl = String(actor.sampleVoiceUrl || "").trim();
   if (officialUrl && /^https?:\/\//i.test(officialUrl)) {
-    sample.href = officialUrl; sample.textContent = "🎧 サンプルボイス";
+    sample.href = officialUrl; sample.textContent = "🎧 ボイスサンプル";
   } else {
     sample.href = "https://www.youtube.com/results?search_query=" + encodeURIComponent("CV：" + actor.name);
     sample.textContent = "▶︎ YouTubeで探す";
   }
-  sample.setAttribute("aria-label", actor.name + (officialUrl ? "のサンプルボイスを開く" : "のサンプルボイスをYouTubeで検索"));
+  sample.setAttribute("aria-label", actor.name + (officialUrl ? "のボイスサンプルを開く" : "のボイスサンプルをYouTubeで検索"));
   item.append(card, sample); return item;
 }
 
