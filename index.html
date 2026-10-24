@@ -371,38 +371,39 @@
 
     /* PC版のみ：以前の「アイコン左・名前と出演情報右」のコンパクトな配置に戻す */
     @media (min-width: 601px) {
+      /* PCだけ：アイコンを左列、名前と作品情報を右列に固定配置 */
       .actor-choice-card { padding: 10px; gap: 2px; }
       .actor-choice-card .choice-button {
-        display: grid;
-        grid-template-columns: 46px minmax(0, 1fr);
-        grid-template-rows: auto 1fr;
-        column-gap: 10px;
-        row-gap: 3px;
+        display: grid !important;
+        grid-template-columns: 46px minmax(0, 1fr) !important;
+        grid-template-rows: auto auto !important;
+        grid-template-areas: "avatar name" "avatar credit" !important;
+        column-gap: 10px !important;
+        row-gap: 3px !important;
         align-items: start;
       }
-      .actor-choice-card .actor-choice-layout { display: contents; }
+      .actor-choice-card .actor-choice-layout { display: contents !important; }
       .actor-choice-card .actor-avatar {
-        grid-column: 1;
-        grid-row: 1 / span 2;
+        grid-area: avatar !important;
         margin-top: 1px;
       }
       .actor-choice-card .actor-choice-copy {
-        grid-column: 2;
-        grid-row: 1;
+        grid-area: name !important;
         min-width: 0;
         align-self: center;
       }
       .actor-choice-card .actor-button-name { display: block; overflow-wrap: anywhere; }
       .actor-choice-card .actor-credit {
-        grid-column: 2;
-        grid-row: 2;
+        grid-area: credit !important;
+        width: 100%;
         min-width: 0;
         min-height: 0;
-        padding: 2px 0 0;
+        margin: 0 !important;
+        padding: 2px 0 0 !important;
         line-height: 1.45;
       }
-      .actor-choice-card .credit-work { margin: 1px 0 2px; padding: 3px 6px; }
-      .actor-choice-card .credit-character { margin: 0 0 4px; }
+      .actor-choice-card .credit-work { display: block; width: fit-content; max-width: 100%; margin: 1px 0 2px; padding: 3px 6px; }
+      .actor-choice-card .credit-character { display: block; margin: 0 0 4px; }
     }
 
     /* スマホ版だけカードとサンプルボタンの間隔をコンパクトにする */
