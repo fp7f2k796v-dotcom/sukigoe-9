@@ -118,6 +118,7 @@
     .actor-choice-card .credit-character { display:block; margin:0 0 6px; color:#927b8c; }
     .sample-link { display:flex; align-items:center; justify-content:center; gap:5px; width:100%; box-sizing:border-box; text-align:center; padding:9px 4px; border:2px solid #e5c7d8; border-radius:14px; background:#fff; color:#925273; font-size:clamp(11px, 2.9vw, 14px); font-weight:600; text-decoration:none; }
     .sample-link:hover { background:#fff8fc; }
+    .sample-link-note { margin-top: -2px; font-size: 12px; line-height: 1.6; color: #988693; }
     .quick-actor-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:12px 0; }
     .quick-actor-option { display:flex; align-items:flex-start; gap:7px; padding:9px; border:1px solid #ecd5e2; border-radius:10px; background:#fffafd; font-size:13px; overflow-wrap:anywhere; }
     .quick-actor-option input { accent-color:#a85f88; flex:0 0 auto; margin-top:3px; }
@@ -371,20 +372,21 @@
 
     /* PC版のみ：以前の「アイコン左・名前と出演情報右」のコンパクトな配置に戻す */
     @media (min-width: 601px) {
-      /* PCだけ：アイコンを左列、名前と作品情報を右列に固定配置 */
-      .actor-choice-card { padding: 10px; gap: 2px; }
+      /* PC版：アイコンを左、声優名と作品情報を右に。余白は参考画像に合わせてゆったり維持 */
+      .actor-choice-card { padding: 12px; gap: 8px; }
       .actor-choice-card .choice-button {
         display: grid !important;
-        grid-template-columns: 46px minmax(0, 1fr) !important;
+        grid-template-columns: 56px minmax(0, 1fr) !important;
         grid-template-rows: auto auto !important;
         grid-template-areas: "avatar name" "avatar credit" !important;
-        column-gap: 10px !important;
-        row-gap: 3px !important;
+        column-gap: 14px !important;
+        row-gap: 10px !important;
         align-items: start;
       }
       .actor-choice-card .actor-choice-layout { display: contents !important; }
       .actor-choice-card .actor-avatar {
         grid-area: avatar !important;
+        width: 56px; height: 56px; flex-basis: 56px; border-radius: 15px;
         margin-top: 1px;
       }
       .actor-choice-card .actor-choice-copy {
@@ -397,13 +399,13 @@
         grid-area: credit !important;
         width: 100%;
         min-width: 0;
-        min-height: 0;
+        min-height: 76px;
         margin: 0 !important;
-        padding: 2px 0 0 !important;
-        line-height: 1.45;
+        padding: 0 !important;
+        line-height: 1.55;
       }
-      .actor-choice-card .credit-work { display: block; width: fit-content; max-width: 100%; margin: 1px 0 2px; padding: 3px 6px; }
-      .actor-choice-card .credit-character { display: block; margin: 0 0 4px; }
+      .actor-choice-card .credit-work { display: block; width: fit-content; max-width: 100%; margin: 2px 0 4px; padding: 4px 7px; }
+      .actor-choice-card .credit-character { display: block; margin: 0 0 8px; }
     }
 
     /* スマホ版だけカードとサンプルボタンの間隔をコンパクトにする */
@@ -496,6 +498,7 @@
       <h2 id="comparison-title">予選：どの声が好き？</h2>
       <p id="comparison-progress" class="help-text"></p>
       <p id="comparison-instruction" class="help-text">好きな声優をタップしてね。</p>
+      <p class="help-text sample-link-note">「🎧 サンプルボイス」を押すと、公式プロフィールのサンプルボイスページに移動します。公式URLがない場合は「▶︎ YouTubeで探す」が表示されます。</p>
       <div id="comparison-list"></div>
       <p id="comparison-message" class="help-text"></p>
       <div id="prelim-actions">
