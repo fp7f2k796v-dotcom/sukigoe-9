@@ -105,18 +105,18 @@
     .mode-description { flex: 0 0 auto; margin-top: 0; padding: 4px 9px; border-radius: 999px; background: #f5eaf1; color: #95647f; font-size: 11px; line-height: 1.35; font-weight: bold; }
     .mode-detail { display: block; margin-top: 8px; color: #a08096; font-size: 11px; line-height: 1.5; font-weight: normal; }
     .actor-choice-layout { display: flex; align-items: center; gap: 10px; text-align: left; }
-    .actor-choice-item { min-width:0; display:flex; flex-direction:column; height:100%; gap:5px; }
-    .actor-choice-card { min-width:0; display:flex; flex:1 1 auto; flex-direction:column; gap:4px; padding:8px; border:1px solid #eadfe5; border-radius:20px; background:#fffafd; }
-    .actor-choice-card .choice-button { display:flex; flex-direction:column; align-items:stretch; gap:0; width:100%; padding:0; min-height:0; text-align:left; border:0; background:transparent; box-shadow:none; border-radius:14px; color:inherit; }
+    .actor-choice-item { min-width:0; display:flex; flex-direction:column; height:100%; gap:8px; }
+    .actor-choice-card { min-width:0; display:flex; flex:1 1 auto; flex-direction:column; gap:9px; padding:10px; border:1px solid #eadfe5; border-radius:20px; background:#fffafd; }
+    .actor-choice-card .choice-button { display:flex; flex-direction:column; align-items:stretch; gap:3px; width:100%; padding:0; min-height:0; text-align:left; border:0; background:transparent; box-shadow:none; border-radius:14px; color:inherit; }
     .actor-choice-card .choice-button:hover { background:#fff4fa; }
     .actor-choice-card .choice-button:focus-visible { outline:3px solid #a85f88; outline-offset:2px; }
     .actor-choice-card .choice-button.selected { outline:2px solid #a85f88; outline-offset:1px; }
     .actor-choice-card .actor-avatar { flex-basis:46px; width:46px; height:46px; border-radius:14px; font-size:23px; }
     .actor-choice-card .actor-button-name { font-size:clamp(14px, 3.8vw, 20px); }
-    .actor-choice-card .actor-credit { display:block; width:100%; box-sizing:border-box; margin:0; padding:5px 10px 7px; min-height:0; border-radius:15px; background:transparent; font-size:clamp(11px, 2.9vw, 15px); line-height:1.5; }
+    .actor-choice-card .actor-credit { display:block; width:100%; box-sizing:border-box; margin:0; padding:10px; min-height:76px; border-radius:15px; background:transparent; font-size:clamp(11px, 2.9vw, 15px); line-height:1.55; }
     .actor-choice-card .credit-work { display:block; width:fit-content; max-width:100%; box-sizing:border-box; margin:2px 0 4px; padding:4px 7px; border-radius:8px; background:#f7eaf1; color:#95647f; font-size:inherit; overflow-wrap:anywhere; }
     .actor-choice-card .credit-character { display:block; margin:0 0 6px; color:#927b8c; }
-    .sample-link { display:flex; align-items:center; justify-content:center; gap:5px; width:100%; box-sizing:border-box; text-align:center; padding:6px 4px; border:2px solid #e5c7d8; border-radius:14px; background:#fff; color:#925273; font-size:clamp(11px, 2.9vw, 14px); font-weight:600; text-decoration:none; }
+    .sample-link { display:flex; align-items:center; justify-content:center; gap:5px; width:100%; box-sizing:border-box; text-align:center; padding:9px 4px; border:2px solid #e5c7d8; border-radius:14px; background:#fff; color:#925273; font-size:clamp(11px, 2.9vw, 14px); font-weight:600; text-decoration:none; }
     .sample-link:hover { background:#fff8fc; }
     .quick-actor-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:12px 0; }
     .quick-actor-option { display:flex; align-items:flex-start; gap:7px; padding:9px; border:1px solid #ecd5e2; border-radius:10px; background:#fffafd; font-size:13px; overflow-wrap:anywhere; }
@@ -367,6 +367,17 @@
 
     @media (max-width: 420px) {
       .panel { padding: 20px; }
+    }
+
+    /* スマホ版だけカードとサンプルボタンの間隔をコンパクトにする */
+    @media (max-width: 600px) {
+      .actor-choice-item { gap: 3px; }
+      .actor-choice-card { gap: 2px; padding: 8px; }
+      .actor-choice-card .choice-button { gap: 0; }
+      .actor-choice-card .actor-credit { padding: 3px 6px 4px; line-height: 1.45; }
+      .actor-choice-card .credit-work { margin: 1px 0 2px; padding: 3px 6px; }
+      .actor-choice-card .credit-character { margin: 0 0 3px; }
+      .sample-link { padding: 5px 3px; }
     }
     .aggregate-box { margin-top: 26px; padding: 18px; border: 1px solid #edcddd; border-radius: 14px; background: #fffafd; }
     .aggregate-box h3 { margin-top: 0; }
