@@ -369,6 +369,42 @@
       .panel { padding: 20px; }
     }
 
+    /* PC版のみ：以前の「アイコン左・名前と出演情報右」のコンパクトな配置に戻す */
+    @media (min-width: 601px) {
+      .actor-choice-card { padding: 10px; gap: 2px; }
+      .actor-choice-card .choice-button {
+        display: grid;
+        grid-template-columns: 46px minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
+        column-gap: 10px;
+        row-gap: 3px;
+        align-items: start;
+      }
+      .actor-choice-card .actor-choice-layout { display: contents; }
+      .actor-choice-card .actor-avatar {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        margin-top: 1px;
+      }
+      .actor-choice-card .actor-choice-copy {
+        grid-column: 2;
+        grid-row: 1;
+        min-width: 0;
+        align-self: center;
+      }
+      .actor-choice-card .actor-button-name { display: block; overflow-wrap: anywhere; }
+      .actor-choice-card .actor-credit {
+        grid-column: 2;
+        grid-row: 2;
+        min-width: 0;
+        min-height: 0;
+        padding: 2px 0 0;
+        line-height: 1.45;
+      }
+      .actor-choice-card .credit-work { margin: 1px 0 2px; padding: 3px 6px; }
+      .actor-choice-card .credit-character { margin: 0 0 4px; }
+    }
+
     /* スマホ版だけカードとサンプルボタンの間隔をコンパクトにする */
     @media (max-width: 600px) {
       .actor-choice-item { gap: 3px; }
