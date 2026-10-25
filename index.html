@@ -455,9 +455,18 @@
     .aggregate-primary:hover { background: #914a73; }
     .aggregate-secondary { background: #fff; color: #925273; border: 2px solid #dba7c4; }
     .aggregate-notice { padding: 11px 13px; border-radius: 10px; background: #fff0f7; color: #87556f; font-size: 13px; line-height: 1.7; margin: 10px 0; }
-    .aggregate-home-card { margin-top: 20px; padding: 20px; border: 2px solid #e4c5d8; border-radius: 18px; background: linear-gradient(145deg, #fff, #fff4fa); text-align: center; }
-    .aggregate-home-card h3 { margin: 0 0 8px; color: #9d527d; }
-    .aggregate-home-card p { color: #867682; font-size: 13px; line-height: 1.7; margin: 0 0 14px; }
+    .welcome-panel #begin-button { display: block; width: min(100%, 420px); min-height: 76px; margin: 24px auto 0; padding: 20px 28px; border: 0; border-radius: 18px; background: linear-gradient(135deg, #bd729e, #9f5b86); color: #fff; box-shadow: 0 8px 0 #e8c3d8, 0 14px 24px #a85f8830; font-size: clamp(23px, 5vw, 30px); font-weight: 800; letter-spacing: .08em; }
+    .welcome-panel #begin-button::before { content: "♡  "; font-size: 1em; }
+    .welcome-panel #begin-button::after { content: "  ›"; font-size: 1.15em; }
+    .welcome-panel #begin-button:hover { background: linear-gradient(135deg, #c780aa, #a85f88); transform: translateY(-1px); }
+    .aggregate-home-card { margin-top: 30px; padding: 22px 20px; border: 2px solid #d8d8fb; border-radius: 20px; background: linear-gradient(145deg, #f9f9ff, #f0f0ff 75%, #f7f5ff); text-align: center; }
+    .aggregate-home-card h3 { margin: 0 0 8px; color: #6865ad; }
+    .aggregate-home-card p { color: #817e98; font-size: 13px; line-height: 1.7; margin: 0 0 18px; }
+    .aggregate-home-card::before { content: "✧  ♛  ✧"; display: block; margin: 0 auto 10px; color: #8582d5; letter-spacing: 8px; font-size: 19px; }
+    .aggregate-home-card #home-aggregate-button { width: 100%; min-height: 58px; padding: 15px 16px; border: 2px solid #9290e2; border-radius: 15px; background: #fff; color: #6865ad; box-shadow: 0 5px 14px #8582d51c; font-size: 16px; font-weight: 800; }
+    .aggregate-home-card #home-aggregate-button::before { content: "▥  "; }
+    .aggregate-home-card #home-aggregate-button::after { content: "  ›"; }
+    .aggregate-home-card #home-aggregate-button:hover { background: #f1f0ff; }
     .aggregate-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
     .aggregate-table th, .aggregate-table td { padding: 8px; border-bottom: 1px solid #f0dce6; text-align: left; }
     .aggregate-table th { color: #a34f7a; }
