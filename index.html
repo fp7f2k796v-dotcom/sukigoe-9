@@ -603,7 +603,7 @@ const resultList = document.getElementById("result-list");
 let candidates = [], groups = [], groupIndex = 0, groupSelections = [], winners = [], addedActors = [];
 let currentMode = "all", selectedWorkIds = new Set();
 let stage = "prelim";
-let qualifierPool = [], qualifierResults = [], qualifierCounts = new Map(), qualifierAppearances = new Map(), qualifierQuestion = 0, qualifierCurrentGroup = null, qualifierHistory = [], qualifierRedoGroup = null, qualifierAnswerLocked = false;
+let qualifierPool = [], qualifierResults = [], qualifierCounts = new Map(), qualifierAppearances = new Map(), qualifierQuestion = 0, qualifierCurrentGroup = null, qualifierHistory = [], qualifierRedoGroup = null, qualifierAnswerLocked = false, qualifierReviewIds = null;
 let finalPool = [], finalResults = [], finalCounts = new Map(), finalCurrentPair = null, finalRedoPair = null;
 let finalSortOrder = [], finalInsertOrder = [], finalInsertIndex = 1, finalLow = 0, finalHigh = 0, finalCurrentActor = null, finalHistory = [], finalAnswerLocked = false;
 
@@ -809,30 +809,46 @@ function rankQualifier(pool = qualifierPool) {
   const tieWins = new Map(pool.map(a => [a.id, 0]));
   for (const r of qualifierHistory) {
     if (r.review) {
-      if (reviewCounts.has(r.winnerId)) reviewWins.set(r.winnerId, reviewWins.get(r.winnerId) + 1);
-      for (const id of r.groupIds || []) if (reviewCounts.has(id)) reviewCounts.set(id, reviewCounts.get(id) + 1);
+      if (reviewWins.has(r.winnerId)) reviewWins.set(r.winnerId, reviewWins.get(r.winnerId) + 1);
+      for (const id of r.groupIds || []) {
+        if (reviewCounts.has(id)) reviewCounts.set(id, reviewCounts.get(id) + 1);
+      }
     }
     if (r.tieBreak && tieWins.has(r.winnerId)) tieWins.set(r.winnerId, tieWins.get(r.winnerId) + 1);
   }
+
   const baseRank = [...pool].sort((a, b) =>
     (wins.get(b.id) || 0) - (wins.get(a.id) || 0) ||
     (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
     a.name.localeCompare(b.name, "ja")
   );
-  const reviewIds = new Set(baseRank.slice(11, 20).map(a => a.id));
-  // Review results are a tiebreaker only. They must never add a fractional
-  // "win" to the base score, because one extra review win could otherwise
-  // cancel a real base-win difference and let a lower-ranked candidate jump
-  // over someone who won more of the main comparisons.
-  const reviewRate = a => reviewIds.has(a.id) && reviewCounts.get(a.id)
+
+  // Lock the review band once the four-comparison phase is complete.
+  // It must not move as review results arrive, or candidates can enter/leave
+  // the review pool mid-process and make the final order unstable.
+  const reviewIds = qualifierReviewIds || new Set(baseRank.slice(11, 20).map(a => a.id));
+  const reviewBand = baseRank.filter(a => reviewIds.has(a.id));
+  const reviewRate = a => reviewCounts.get(a.id)
     ? reviewWins.get(a.id) / reviewCounts.get(a.id) : 0;
-  return [...pool].sort((a, b) =>
-    (wins.get(b.id) || 0) - (wins.get(a.id) || 0) ||
+
+  // Keep ranks 1–11 and 21+ anchored to the base results. Within the
+  // 12–20 review band, direct review outcomes can correct a near-cutoff
+  // mis-order: up to two review matches count as a bounded score adjustment.
+  // This lets the review phase matter without allowing it to reshuffle the
+  // whole field.
+  reviewBand.sort((a, b) =>
     reviewRate(b) - reviewRate(a) ||
+    (wins.get(b.id) || 0) - (wins.get(a.id) || 0) ||
     (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
     (tieWins.get(b.id) || 0) - (tieWins.get(a.id) || 0) ||
     a.name.localeCompare(b.name, "ja")
   );
+
+  const top = baseRank.slice(0, 11).filter(a => !reviewIds.has(a.id));
+  const outside = baseRank.slice(20).filter(a => !reviewIds.has(a.id));
+  // Preserve the base ranking outside the review band; only the near-cutoff
+  // group is re-ordered by review results.
+  return [...top, ...reviewBand, ...outside];
 }
 function pairKey(a, b) { return [a.id, b.id].sort().join("::"); }
 function qualifierPlayedPairs() {
@@ -890,7 +906,8 @@ function chooseQualifierPair() {
     (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
     a.name.localeCompare(b.name, "ja")
   );
-  const reviewPool = baseRank.slice(11, 20);
+  if (!qualifierReviewIds) qualifierReviewIds = new Set(baseRank.slice(11, 20).map(a => a.id));
+  const reviewPool = baseRank.filter(a => qualifierReviewIds.has(a.id));
   const reviewIds = new Set(reviewPool.map(a => a.id));
   const reviewAppearances = new Map(reviewPool.map(a => [a.id, 0]));
   const reviewPairs = new Set();
@@ -914,13 +931,14 @@ function chooseQualifierPair() {
       if (reviewAppearances.get(a.id) >= 2 || reviewAppearances.get(b.id) >= 2) continue;
       if (reviewPairs.has(pairKey(a, b))) continue;
       const winDiff = Math.abs((wins.get(a.id) || 0) - (wins.get(b.id) || 0));
-      reviewCandidates.push({ a, b, winDiff, distance: Math.abs(i - j) });
+      const boundaryDistance = Math.abs((11 + i) - 15.5) + Math.abs((11 + j) - 15.5);
+      reviewCandidates.push({ a, b, winDiff, distance: Math.abs(i - j), boundaryDistance });
     }
   }
   if (reviewCandidates.length) {
     reviewCandidates.sort((x, y) =>
       (x.winDiff > 1 ? 1 : 0) - (y.winDiff > 1 ? 1 : 0) ||
-      x.winDiff - y.winDiff || x.distance - y.distance
+      x.winDiff - y.winDiff || x.boundaryDistance - y.boundaryDistance || x.distance - y.distance
     );
     const pair = [reviewCandidates[0].a, reviewCandidates[0].b];
     pair.review = true;
@@ -952,7 +970,7 @@ function chooseQualifierPair() {
   return null;
 }
 function startQualifier(list) {
-  qualifierPool = uniqueActors(list); qualifierResults = []; qualifierCounts = new Map(qualifierPool.map(a => [a.id, 0])); qualifierAppearances = new Map(qualifierPool.map(a => [a.id, 0])); qualifierQuestion = 0; qualifierHistory = []; qualifierRedoGroup = null; qualifierAnswerLocked = false;
+  qualifierPool = uniqueActors(list); qualifierResults = []; qualifierCounts = new Map(qualifierPool.map(a => [a.id, 0])); qualifierAppearances = new Map(qualifierPool.map(a => [a.id, 0])); qualifierQuestion = 0; qualifierHistory = []; qualifierRedoGroup = null; qualifierAnswerLocked = false; qualifierReviewIds = null;
   stage = "qualifier"; renderQualifier();
 }
 function renderQualifier() {
