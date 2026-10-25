@@ -993,8 +993,11 @@ function answerQualifier(winner) {
       (baseStrength.get(a.id) || 0) === (baseStrength.get(cutoff.id) || 0));
   const result = {
     winnerId: winner.id, loserIds: [loser.id], groupIds: group.map(a => a.id),
-    tieBreak: !!group.tieBreak || isTieBreak,
-    review: !!group.review && !isTieBreak
+    // A review match must remain a review match even when its participants
+    // happen to share the cutoff's base record. Otherwise it is excluded from
+    // review-pair accounting and can be selected repeatedly forever.
+    tieBreak: !!group.tieBreak || (!group.review && isTieBreak),
+    review: !!group.review
   };
   qualifierHistory.push(result);
   qualifierResults.push({ winnerId: winner.id, loserId: loser.id });
