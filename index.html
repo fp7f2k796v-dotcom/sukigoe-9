@@ -453,6 +453,7 @@
     .aggregate-table th, .aggregate-table td { padding: 8px; border-bottom: 1px solid #f0dce6; text-align: left; }
     .aggregate-table th { color: #a34f7a; }
   </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
   <header>
@@ -567,6 +568,13 @@
         <h3 id="aggregate-title">みんなの好き声集計</h3>
         <p class="help-text">参加は任意だよ。参加すると、名前を含めず、選んだモードと声優IDの順位（1〜9位）だけを集計に送信します。送信後の個別データ削除はできません。集計は匿名の自己申告で、正確性を保証するものではありません。</p>
         <button class="secondary-button" id="submit-aggregate-button" type="button">集計に参加</button>
+        <div
+  id="turnstile-container"
+  class="cf-turnstile"
+  data-sitekey="0x4AAAAAAFkyyYbd9UW0jnJi"
+  data-callback="onTurnstileSuccess"
+  data-expired-callback="onTurnstileExpired">
+</div>
         <button class="secondary-button" id="view-aggregate-button" type="button">みんなの集計を見る</button>
         <p id="aggregate-message" class="help-text" aria-live="polite"></p>
         <div id="aggregate-results" hidden></div>
@@ -1420,13 +1428,38 @@ document.getElementById("submit-aggregate-button").addEventListener("click", asy
   if (localStorage.getItem(submittedKey)) { message.textContent = "このブラウザからはすでに集計に参加しています。"; return; }
   button.disabled = true; message.textContent = "集計に送信中…";
   try {
-    await supabaseRpc("submit_sukigoe_result", { p_mode: currentMode, p_rankings: rows.map(a=>a.id) });
+    const token = turnstileToken;
+if (!token) {
+  throw new Error("先に認証を完了してください。");
+}
+const base = String(SUPABASE_CFG.url).replace(/\/+$/, "");
+const response = await fetch(`${base}/functions/v1/submit-sukigoe`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "apikey": SUPABASE_CFG.anonKey
+  },
+  body: JSON.stringify({
+    token,
+    mode: currentMode,
+    rankings: rows.map(a => a.id)
+  })
+});
+    turnstileToken = "";
+if (window.turnstile) window.turnstile.reset();
+if (!response.ok) {
+  throw new Error(`投稿に失敗しました (${response.status})`);
+}
     localStorage.setItem(submittedKey, "1");
     message.textContent = "参加ありがとう！名前を送らずに順位データを送信したよ。";
-  } catch (error) {
-    message.textContent = error.message || "送信できませんでした。設定を確認してね。";
-    button.disabled = false;
-  }
+  
+} catch (error) {
+  turnstileToken = "";
+  if (window.turnstile) window.turnstile.reset();
+  message.textContent = error.message || "送信できませんでした。設定を確認してね。";
+  button.disabled = false;
+}
+
 });
 document.getElementById("view-aggregate-button").addEventListener("click", async () => {
   const box = document.getElementById("aggregate-results");
@@ -1457,6 +1490,15 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 }
 
+    let turnstileToken = "";
+
+window.onTurnstileSuccess = function (token) {
+  turnstileToken = token;
+};
+
+window.onTurnstileExpired = function () {
+  turnstileToken = "";
+};
   </script>
 </body>
 </html>
