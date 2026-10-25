@@ -1465,12 +1465,11 @@ document.getElementById("submit-aggregate-button").addEventListener("click", asy
 if (!token) {
   throw new Error("先に認証を完了してください。");
 }
-const base = String(SUPABASE_CFG.url).replace(/\/+$/, "");
-const response = await fetch(`${base}/functions/v1/submit-sukigoe`, {
+const response = await fetch("https://script.google.com/macros/s/AKfycbzG-VcPjGLzmrn_uvLSkzD-tfsSgF7w0XdW_XylN2ABj_2RTKWcLhC0elrVWqm7Epwr/exec", {
   method: "POST",
+  mode: "no-cors",
   headers: {
-    "Content-Type": "application/json",
-    "apikey": SUPABASE_CFG.anonKey
+    "Content-Type": "text/plain;charset=utf-8"
   },
   body: JSON.stringify({
     token,
@@ -1480,11 +1479,10 @@ const response = await fetch(`${base}/functions/v1/submit-sukigoe`, {
 });
     turnstileToken = "";
 if (window.turnstile) window.turnstile.reset();
-if (!response.ok) {
-  throw new Error(`投稿に失敗しました (${response.status})`);
-}
+// no-corsではレスポンスの成功・失敗を直接確認できないため、
+// 送信リクエストを投げた後はシート側で保存を確認する
     localStorage.setItem(submittedKey, "1");
-    message.textContent = "参加ありがとう！名前を送らずに順位データを送信したよ。";
+    message.textContent = "送信リクエストを受け付けました。回答データへの反映を確認しています。";
   
 } catch (error) {
   turnstileToken = "";
