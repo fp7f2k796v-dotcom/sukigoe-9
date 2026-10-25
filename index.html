@@ -262,7 +262,8 @@
     .choice-button .actor-credit { text-align: left; }
     .result-credit { font-size: 10px; line-height: 1.35; color: #927b8c; font-weight: normal; }
     .result-image-wrap { width: 100%; max-width: 600px; margin: 18px auto 24px; }
-    .result-image-preview { display: block; width: 100%; height: auto; border-radius: 12px; }
+    .result-image-preview { display: block; width: 100%; height: auto; border-radius: 12px; -webkit-touch-callout: default; user-select: auto; }
+    .result-image-help { margin: -12px auto 20px; max-width: 600px; font-size: 12px; line-height: 1.7; color: #988693; }
     #result-list[hidden] { display: none !important; }
     .share-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
     .share-row input { flex: 1; min-width: 160px; padding: 12px; border: 1px solid #ecd5e2; border-radius: 10px; font: inherit; }
@@ -527,7 +528,7 @@
       <h2 id="comparison-title">予選：どの声が好き？</h2>
       <p id="comparison-progress" class="help-text"></p>
       <p id="comparison-instruction" class="help-text">好きな声優をタップしてね。</p>
-      <p class="help-text sample-link-note">「🎧 ボイスサンプル」を押すと、公式プロフィールのボイスサンプルページに移動します。公式URLがない場合は「▶︎ YouTubeで探す」が表示されます。</p>
+      <p class="help-text sample-link-note">「♫ ボイスサンプル ↗」を押すと、各所属事務所の公式ボイスサンプルページに移動します。公式サンプルボイスを確認できない場合は、「▶︎ YouTubeで探す」から検索できます。</p>
       <div id="comparison-list"></div>
       <p id="comparison-message" class="help-text"></p>
       <div id="prelim-actions">
@@ -555,6 +556,7 @@
       <div class="result-image-wrap">
         <img id="result-image-preview" class="result-image-preview" alt="好き声9選の順位結果画像">
       </div>
+      <p class="result-image-help">スマホで保存ボタンが使えない場合は、結果画像を長押しして「写真に保存」などを選んでね。</p>
       <h3>結果をシェアしよう！</h3>
       <label class="help-text" for="player-name">ポストに表示する名前（任意）</label>
       <div class="share-row">
@@ -723,7 +725,7 @@ function makeActorChoice(actor, selected, onChoose) {
   const sample = document.createElement("a"); sample.className = "sample-link"; sample.target = "_blank"; sample.rel = "noopener noreferrer";
   const officialUrl = String(actor.sampleVoiceUrl || "").trim();
   if (officialUrl && /^https?:\/\//i.test(officialUrl)) {
-    sample.href = officialUrl; sample.textContent = "🎧 ボイスサンプル";
+    sample.href = officialUrl; sample.textContent = "♫ ボイスサンプル ↗";
   } else {
     sample.href = "https://www.youtube.com/results?search_query=" + encodeURIComponent("CV：" + actor.name);
     sample.textContent = "▶︎ YouTubeで探す";
@@ -1386,9 +1388,40 @@ function openXShare(text) {
   return true;
 }
 function GenUICopyFallback(text) { if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(()=>{}); }
-document.getElementById("save-result-image-button").addEventListener("click",()=>{
-  const canvas=drawResultImage(); const link=document.createElement("a"); link.download="好き声9選.png"; link.href=canvas.toDataURL("image/png"); link.click();
-  document.getElementById("share-message").textContent="結果画像を保存したよ！ Xで共有するときに画像を添付してね。";
+document.getElementById("save-result-image-button").addEventListener("click", async ()=>{
+  const message = document.getElementById("share-message");
+  const canvas = drawResultImage();
+  try {
+    const blob = await new Promise((resolve, reject) => canvas.toBlob(value => value ? resolve(value) : reject(new Error("画像を作成できませんでした。")), "image/png"));
+    const file = new File([blob], "好き声9選.png", { type: "image/png" });
+    // スマホの対応ブラウザでは共有シートを開き、写真への保存などを選べるようにする。
+    if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+      await navigator.share({ files: [file], title: "好き声9選" });
+      message.textContent = "共有メニューを開いたよ！「画像を保存」や「写真に保存」などを選んでね。";
+      return;
+    }
+    // それ以外のブラウザでは通常のダウンロードを試す。
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a"); link.download = "好き声9選.png"; link.href = url;
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    message.textContent = "保存が始まらない場合は、上の結果画像を長押しして保存してね。";
+  } catch (error) {
+    if (error && error.name === "AbortError") {
+      message.textContent = "保存・共有をキャンセルしたよ。必要なら結果画像を長押しして保存してね。";
+      return;
+    }
+    // 失敗時は画像を新しいタブで開く方法を案内する。
+    try {
+      const blob = await new Promise((resolve, reject) => canvas.toBlob(value => value ? resolve(value) : reject(new Error("画像を作成できませんでした。")), "image/png"));
+      const url = URL.createObjectURL(blob);
+      const opened = window.open(url, "_blank", "noopener,noreferrer");
+      message.textContent = opened ? "画像を開いたよ。画像を長押しして保存してね。" : "保存できない場合は、上の結果画像を長押しして保存してね。";
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (_) {
+      message.textContent = "保存できなかった場合は、上の結果画像を長押しして保存してね。";
+    }
+  }
 });
 document.getElementById("share-result-button").addEventListener("click",()=>{
   const opened=openXShare(shareText(false));
