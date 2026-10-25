@@ -792,7 +792,7 @@ function qualifierStats(pool = qualifierPool) {
   const wins = new Map(pool.map(a => [a.id, 0]));
   const defeated = new Map(pool.map(a => [a.id, []]));
   for (const r of qualifierHistory) {
-    if (r.tieBreak) continue;
+    if (r.tieBreak || r.review) continue;
     if (wins.has(r.winnerId)) wins.set(r.winnerId, (wins.get(r.winnerId) || 0) + 1);
     const loserId = (r.loserIds || [])[0];
     if (defeated.has(r.winnerId) && loserId) defeated.get(r.winnerId).push(loserId);
@@ -804,10 +804,26 @@ function qualifierStats(pool = qualifierPool) {
 }
 function rankQualifier(pool = qualifierPool) {
   const { wins, opponentStrength } = qualifierStats(pool);
+  const reviewWins = new Map(pool.map(a => [a.id, 0]));
+  const reviewCounts = new Map(pool.map(a => [a.id, 0]));
   const tieWins = new Map(pool.map(a => [a.id, 0]));
-  for (const r of qualifierHistory) if (r.tieBreak && tieWins.has(r.winnerId)) tieWins.set(r.winnerId, tieWins.get(r.winnerId) + 1);
-  return [...pool].sort((a, b) =>
+  for (const r of qualifierHistory) {
+    if (r.review) {
+      if (reviewCounts.has(r.winnerId)) reviewWins.set(r.winnerId, reviewWins.get(r.winnerId) + 1);
+      for (const id of r.groupIds || []) if (reviewCounts.has(id)) reviewCounts.set(id, reviewCounts.get(id) + 1);
+    }
+    if (r.tieBreak && tieWins.has(r.winnerId)) tieWins.set(r.winnerId, tieWins.get(r.winnerId) + 1);
+  }
+  const baseRank = [...pool].sort((a, b) =>
     (wins.get(b.id) || 0) - (wins.get(a.id) || 0) ||
+    (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
+    a.name.localeCompare(b.name, "ja")
+  );
+  const reviewIds = new Set(baseRank.slice(11, 20).map(a => a.id));
+  const reviewScore = a => reviewIds.has(a.id) && reviewCounts.get(a.id)
+    ? reviewWins.get(a.id) / reviewCounts.get(a.id) : 0;
+  return [...pool].sort((a, b) =>
+    ((wins.get(b.id) || 0) + reviewScore(b)) - ((wins.get(a.id) || 0) + reviewScore(a)) ||
     (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
     (tieWins.get(b.id) || 0) - (tieWins.get(a.id) || 0) ||
     a.name.localeCompare(b.name, "ja")
@@ -822,16 +838,19 @@ function qualifierPlayedPairs() {
 }
 function chooseQualifierPair() {
   if (qualifierRedoGroup) {
-    const ids = qualifierRedoGroup; qualifierRedoGroup = null;
+    const redo = qualifierRedoGroup; qualifierRedoGroup = null;
+    const ids = Array.isArray(redo) ? redo : redo.ids;
     const pair = ids.map(id => qualifierPool.find(a => a.id === id)).filter(Boolean);
-    if (pair.length === 2) return pair;
+    if (pair.length === 2) {
+      if (!Array.isArray(redo)) { pair.review = !!redo.review; pair.tieBreak = !!redo.tieBreak; }
+      return pair;
+    }
   }
   const appearances = id => qualifierAppearances.get(id) || 0;
   const played = qualifierPlayedPairs();
   const sorted = rankQualifier();
 
   // 基本比較：全候補に4回ずつ比較機会を作る。
-  // 同じ回数の候補同士を優先し、比較済みの組み合わせは避ける。
   const underTarget = sorted.filter(a => appearances(a.id) < 4);
   if (underTarget.length) {
     const minCount = Math.min(...underTarget.map(a => appearances(a.id)));
@@ -843,40 +862,60 @@ function chooseQualifierPair() {
       const countDiff = appearances(a.id) - appearances(b.id);
       if (countDiff) return countDiff;
       const ia = sorted.findIndex(x => x.id === first.id), ib = sorted.findIndex(x => x.id === a.id), ic = sorted.findIndex(x => x.id === b.id);
-      // 近い順位の相手を優先しつつ、候補者全体に比較が広がるようにする。
       return Math.abs(ib - ia) - Math.abs(ic - ia);
     });
     if (opponents.length) return [first, opponents[0]];
-    // まれに未比較の相手がいない場合は、比較回数が少ない相手を優先して補う。
     const fallback = sorted.filter(a => a.id !== first.id)
       .sort((a, b) => appearances(a.id) - appearances(b.id))[0];
     if (fallback) return [first, fallback];
   }
 
-  // 基本比較が終わったら、16位の境界で同点の候補者だけ追加比較する。
-  const { wins, opponentStrength } = qualifierStats();
+  // 追加比較：12〜20位の候補を対象に、勝利数が近い組を最大2回ずつ比較する。
+  const { wins } = qualifierStats();
   const baseRank = [...qualifierPool].sort((a, b) =>
     (wins.get(b.id) || 0) - (wins.get(a.id) || 0) ||
-    (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
     a.name.localeCompare(b.name, "ja")
   );
-  if (baseRank.length > 16) {
-    const cutoff = baseRank[15];
-    const cutoffWins = wins.get(cutoff.id) || 0;
-    const cutoffStrength = opponentStrength.get(cutoff.id) || 0;
-    const tied = baseRank.filter(a => (wins.get(a.id) || 0) === cutoffWins &&
-      (opponentStrength.get(a.id) || 0) === cutoffStrength);
-    if (tied.length > 1) {
-      const tiedPairs = [];
-      for (let i = 0; i < tied.length; i++) for (let j = i + 1; j < tied.length; j++) {
-        const a = tied[i], b = tied[j];
-        const alreadyTieCompared = qualifierHistory.some(r => r.tieBreak && pairKey(
-          qualifierPool.find(x => x.id === r.groupIds[0]),
-          qualifierPool.find(x => x.id === r.groupIds[1])
-        ) === pairKey(a, b));
-        if (!alreadyTieCompared) tiedPairs.push([a, b]);
-      }
-      if (tiedPairs.length) return tiedPairs[0];
+  const reviewPool = baseRank.slice(11, 20);
+  const reviewAppearances = new Map(reviewPool.map(a => [a.id, 0]));
+  const reviewPairs = new Set();
+  for (const r of qualifierHistory) if (r.review) {
+    for (const id of r.groupIds || []) if (reviewAppearances.has(id)) reviewAppearances.set(id, reviewAppearances.get(id) + 1);
+    const a = qualifierPool.find(x => x.id === r.groupIds[0]);
+    const b = qualifierPool.find(x => x.id === r.groupIds[1]);
+    if (a && b) reviewPairs.add(pairKey(a, b));
+  }
+  const possible = [];
+  for (let i = 0; i < reviewPool.length; i++) for (let j = i + 1; j < reviewPool.length; j++) {
+    const a = reviewPool[i], b = reviewPool[j];
+    if (reviewAppearances.get(a.id) >= 2 || reviewAppearances.get(b.id) >= 2) continue;
+    if (Math.abs((wins.get(a.id) || 0) - (wins.get(b.id) || 0)) > 1) continue;
+    if (reviewPairs.has(pairKey(a, b))) continue;
+    possible.push({ a, b, distance: Math.abs(i-j), winDiff: Math.abs((wins.get(a.id)||0)-(wins.get(b.id)||0)) });
+  }
+  possible.sort((x, y) => x.winDiff - y.winDiff || x.distance - y.distance);
+  if (possible.length) {
+    const pair = [possible[0].a, possible[0].b];
+    pair.review = true;
+    return pair;
+  }
+
+  // 16位の境界で完全同点の候補がいる場合は、該当者同士を追加比較。
+  const fullRank = [...qualifierPool].sort((a, b) =>
+    (wins.get(b.id) || 0) - (wins.get(a.id) || 0) ||
+    (qualifierStats().opponentStrength.get(b.id) || 0) - (qualifierStats().opponentStrength.get(a.id) || 0) ||
+    a.name.localeCompare(b.name, "ja")
+  );
+  if (fullRank.length > 16) {
+    const cutoff = fullRank[15];
+    const tied = fullRank.filter(a => (wins.get(a.id) || 0) === (wins.get(cutoff.id) || 0) &&
+      (qualifierStats().opponentStrength.get(a.id) || 0) === (qualifierStats().opponentStrength.get(cutoff.id) || 0));
+    for (let i = 0; i < tied.length; i++) for (let j = i + 1; j < tied.length; j++) {
+      const a = tied[i], b = tied[j];
+      const already = qualifierHistory.some(r => r.tieBreak && pairKey(
+        qualifierPool.find(x => x.id === r.groupIds[0]), qualifierPool.find(x => x.id === r.groupIds[1])
+      ) === pairKey(a, b));
+      if (!already) { const pair = [a,b]; pair.tieBreak = true; return pair; }
     }
   }
   return null;
@@ -902,7 +941,7 @@ function renderQualifier() {
   document.getElementById("previous-button").textContent = "一つ前の比較へ";
   document.getElementById("previous-button").disabled = qualifierHistory.length === 0;
   comparisonProgress.textContent = `予選・2択比較 ${qualifierQuestion + 1} 回目（候補 ${qualifierPool.length} 人）`;
-  comparisonMessage.textContent = "候補者全体を対象に4回ずつ比較し、勝利数と勝った相手の強さで順位を決めるよ。16位の境界で同点の場合は、その候補者だけ追加比較するよ。";
+  comparisonMessage.textContent = "候補者全体を4回ずつ比較したあと、12〜20位付近で勝利数が近い候補者も追加比較するよ。";
   group.forEach(actor => {
     const b = makeActorChoice(actor, false, () => answerQualifier(actor));
     b.disabled = qualifierAnswerLocked;
@@ -926,7 +965,11 @@ function answerQualifier(winner) {
     (qualifierAppearances.get(group[1].id) || 0) >= 4 && !!cutoff &&
     [group[0], group[1]].every(a => (baseWins.get(a.id) || 0) === (baseWins.get(cutoff.id) || 0) &&
       (baseStrength.get(a.id) || 0) === (baseStrength.get(cutoff.id) || 0));
-  const result = { winnerId: winner.id, loserIds: [loser.id], groupIds: group.map(a => a.id), tieBreak: isTieBreak };
+  const result = {
+    winnerId: winner.id, loserIds: [loser.id], groupIds: group.map(a => a.id),
+    tieBreak: !!group.tieBreak || isTieBreak,
+    review: !!group.review && !isTieBreak
+  };
   qualifierHistory.push(result);
   qualifierResults.push({ winnerId: winner.id, loserId: loser.id });
   result.groupIds.forEach(id => qualifierAppearances.set(id, (qualifierAppearances.get(id) || 0) + 1));
@@ -1206,7 +1249,7 @@ nextButton.addEventListener("click",()=>{if(stage==="prelim")finishPrelimGroup()
 document.getElementById("previous-button").addEventListener("click",()=>{
   if(stage==="prelimResults"){groupIndex=0;winners=[];addedActors=[];groupSelections=[];renderGroup();}
   else if(stage==="prelim"&&groupIndex>0){groupIndex--;renderGroup();}
-  else if(stage==="qualifier"&&qualifierHistory.length){qualifierAnswerLocked=false;const prev=qualifierHistory.pop();qualifierResults.pop();qualifierCounts.set(prev.winnerId,Math.max(0,(qualifierCounts.get(prev.winnerId)||0)-1));prev.loserIds.forEach(id=>qualifierCounts.set(id,Math.max(0,(qualifierCounts.get(id)||0)-1)));prev.groupIds.forEach(id=>qualifierAppearances.set(id,Math.max(0,(qualifierAppearances.get(id)||0)-1)));qualifierQuestion--;qualifierRedoGroup=prev.groupIds;renderQualifier();}
+  else if(stage==="qualifier"&&qualifierHistory.length){qualifierAnswerLocked=false;const prev=qualifierHistory.pop();qualifierResults.pop();qualifierCounts.set(prev.winnerId,Math.max(0,(qualifierCounts.get(prev.winnerId)||0)-1));prev.loserIds.forEach(id=>qualifierCounts.set(id,Math.max(0,(qualifierCounts.get(id)||0)-1)));prev.groupIds.forEach(id=>qualifierAppearances.set(id,Math.max(0,(qualifierAppearances.get(id)||0)-1)));qualifierQuestion--;qualifierRedoGroup={ids:prev.groupIds,review:prev.review,tieBreak:prev.tieBreak};renderQualifier();}
   else if(stage==="final"&&finalHistory.length){const snap=finalHistory.pop();restoreFinalSnapshot(snap);renderFinal();}
 });
 document.querySelectorAll("[data-back]").forEach(b=>b.addEventListener("click",()=>showScreen("mode")));
