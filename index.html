@@ -449,7 +449,15 @@
     }
     .aggregate-box { margin-top: 26px; padding: 18px; border: 1px solid #edcddd; border-radius: 14px; background: #fffafd; }
     .aggregate-box h3 { margin-top: 0; }
-    .aggregate-box button { margin: 4px 6px 4px 0; }
+    .aggregate-actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 16px 0 8px; }
+    .aggregate-actions button { width: 100%; min-height: 54px; padding: 14px 16px; margin: 0; text-align: center; font-size: 16px; font-weight: bold; border-radius: 13px; }
+    .aggregate-primary { background: #a85f88; color: #fff; border: 1px solid #a85f88; }
+    .aggregate-primary:hover { background: #914a73; }
+    .aggregate-secondary { background: #fff; color: #925273; border: 2px solid #dba7c4; }
+    .aggregate-notice { padding: 11px 13px; border-radius: 10px; background: #fff0f7; color: #87556f; font-size: 13px; line-height: 1.7; margin: 10px 0; }
+    .aggregate-home-card { margin-top: 20px; padding: 20px; border: 2px solid #e4c5d8; border-radius: 18px; background: linear-gradient(145deg, #fff, #fff4fa); text-align: center; }
+    .aggregate-home-card h3 { margin: 0 0 8px; color: #9d527d; }
+    .aggregate-home-card p { color: #867682; font-size: 13px; line-height: 1.7; margin: 0 0 14px; }
     .aggregate-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
     .aggregate-table th, .aggregate-table td { padding: 8px; border-bottom: 1px solid #f0dce6; text-align: left; }
     .aggregate-table th { color: #a34f7a; }
@@ -467,6 +475,23 @@
       <h2>あなたの好き声、見つけよう♡</h2>
       <p>気になる声優を選んで比べるだけ。<br>あなただけのTOP9を作ろう！</p>
       <button class="primary-button" id="begin-button">スタート</button>
+      <section class="aggregate-home-card" aria-labelledby="home-aggregate-title">
+        <h3 id="home-aggregate-title">みんなの好き声ランキング</h3>
+        <p>好き声9選を作らなくても、みんなの1位や声優の組み合わせを見られるよ！</p>
+        <button class="primary-button" id="home-aggregate-button" type="button" style="width:100%;min-height:54px;font-size:16px;font-weight:bold;">みんなの集計を見る</button>
+      </section>
+    </section>
+
+    <section class="panel" id="aggregate-screen" hidden>
+      <h2>みんなの好き声集計</h2>
+      <p class="help-text">みんなの好き声9選から、1位に選ばれた声優や、一緒に選ばれやすい声優を見てみよう！</p>
+      <div class="aggregate-actions">
+        <button class="primary-button" id="view-aggregate-home-button" type="button">最新の集計を読み込む</button>
+        <button class="secondary-button" id="aggregate-home-create-button" type="button">自分も好き声9選を作る</button>
+      </div>
+      <p id="aggregate-home-message" class="help-text" aria-live="polite"></p>
+      <div id="aggregate-results-home" hidden></div>
+      <button class="back-button" id="aggregate-home-back-button" type="button">トップへ戻る</button>
     </section>
 
     <section class="panel" id="mode-screen" hidden>
@@ -568,8 +593,11 @@
       <section class="aggregate-box" aria-labelledby="aggregate-title">
         <h3 id="aggregate-title">みんなの好き声集計</h3>
         <p class="help-text">参加は任意だよ。参加すると、名前は送らず、選んだモードと声優IDの順位（1〜9位）だけを送信します。送信後の個別データ削除はできません。匿名の自己申告なので、正確性を保証するものではありません。</p>
-        <button class="secondary-button" id="submit-aggregate-button" type="button">集計に参加</button>
-        <button class="secondary-button" id="view-aggregate-button" type="button">みんなの集計を見る</button>
+        <p class="aggregate-notice"><strong>集計への参加は1回だけお願いします。</strong><br>同じ好き声9選を複数回送信せず、このランキングを1回だけ送信してね。名前は送信されません。</p>
+        <div class="aggregate-actions">
+          <button class="aggregate-primary" id="submit-aggregate-button" type="button">集計に参加する</button>
+          <button class="aggregate-secondary" id="view-aggregate-button" type="button">みんなの結果を見る</button>
+        </div>
         <p id="aggregate-message" class="help-text" aria-live="polite"></p>
         <div id="aggregate-results" hidden></div>
       </section>
@@ -584,6 +612,7 @@
   <script>
 const screens = {
   home: document.getElementById("home-screen"),
+  aggregate: document.getElementById("aggregate-screen"),
   mode: document.getElementById("mode-screen"),
   quick: document.getElementById("quick-screen"),
   work: document.getElementById("work-screen"),
@@ -591,6 +620,9 @@ const screens = {
   result: document.getElementById("result-screen")
 };
 function showScreen(name) { Object.entries(screens).forEach(([key, el]) => el.hidden = key !== name); }
+document.getElementById("home-aggregate-button").addEventListener("click", () => showScreen("aggregate"));
+document.getElementById("aggregate-home-back-button").addEventListener("click", () => showScreen("home"));
+document.getElementById("aggregate-home-create-button").addEventListener("click", () => showScreen("mode"));
 const workList = document.getElementById("work-list");
 const workMessage = document.getElementById("work-message");
 const comparisonList = document.getElementById("comparison-list");
@@ -1499,11 +1531,9 @@ function loadAggregateStats() {
   });
 }
 
-document.getElementById("view-aggregate-button").addEventListener("click", async () => {
-  const box = document.getElementById("aggregate-results");
-  const message = document.getElementById("aggregate-message");
-  const button = document.getElementById("view-aggregate-button");
-  button.disabled = true; message.textContent = "集計を読み込み中…";
+async function showAggregateResults(box, message, button) {
+  button.disabled = true;
+  message.textContent = "集計を読み込み中…";
   try {
     const data = await loadAggregateStats();
     const total = Number(data.submission_count || 0);
@@ -1525,12 +1555,28 @@ document.getElementById("view-aggregate-button").addEventListener("click", async
           `</tbody></table>`;
       }).join("");
     }
-    box.innerHTML = html; box.hidden = false; message.textContent = "集計を表示したよ。";
+    box.innerHTML = html;
+    box.hidden = false;
+    message.textContent = "集計を表示したよ。";
   } catch (error) {
     message.textContent = error.message || "集計を読み込めませんでした。";
   } finally {
     button.disabled = false;
   }
+}
+document.getElementById("view-aggregate-button").addEventListener("click", () => {
+  showAggregateResults(
+    document.getElementById("aggregate-results"),
+    document.getElementById("aggregate-message"),
+    document.getElementById("view-aggregate-button")
+  );
+});
+document.getElementById("view-aggregate-home-button").addEventListener("click", () => {
+  showAggregateResults(
+    document.getElementById("aggregate-results-home"),
+    document.getElementById("aggregate-home-message"),
+    document.getElementById("view-aggregate-home-button")
+  );
 });
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
