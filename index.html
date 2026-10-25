@@ -846,76 +846,102 @@ function chooseQualifierPair() {
       return pair;
     }
   }
+
   const appearances = id => qualifierAppearances.get(id) || 0;
   const played = qualifierPlayedPairs();
   const sorted = rankQualifier();
 
-  // 基本比較：全候補に4回ずつ比較機会を作る。
+  // Phase 1: give every candidate four base comparisons. Prefer candidates
+  // with the fewest appearances and avoid repeat pairings whenever possible.
   const underTarget = sorted.filter(a => appearances(a.id) < 4);
   if (underTarget.length) {
     const minCount = Math.min(...underTarget.map(a => appearances(a.id)));
     const first = underTarget.filter(a => appearances(a.id) === minCount)
       .sort((a, b) => sorted.indexOf(a) - sorted.indexOf(b))[0];
-    const opponents = sorted.filter(a => a.id !== first.id && appearances(a.id) < 4 &&
+    let opponents = sorted.filter(a => a.id !== first.id && appearances(a.id) < 4 &&
       !played.has(pairKey(first, a)));
     opponents.sort((a, b) => {
       const countDiff = appearances(a.id) - appearances(b.id);
       if (countDiff) return countDiff;
-      const ia = sorted.findIndex(x => x.id === first.id), ib = sorted.findIndex(x => x.id === a.id), ic = sorted.findIndex(x => x.id === b.id);
-      return Math.abs(ib - ia) - Math.abs(ic - ia);
+      const firstRank = sorted.findIndex(x => x.id === first.id);
+      return Math.abs(sorted.findIndex(x => x.id === a.id) - firstRank) -
+        Math.abs(sorted.findIndex(x => x.id === b.id) - firstRank);
     });
     if (opponents.length) return [first, opponents[0]];
+
+    // If the remaining under-target candidates have all met each other,
+    // pair the first one with the least-played other candidate. This guarantees
+    // forward progress instead of repeatedly selecting an impossible pairing.
     const fallback = sorted.filter(a => a.id !== first.id)
-      .sort((a, b) => appearances(a.id) - appearances(b.id))[0];
+      .sort((a, b) => appearances(a.id) - appearances(b.id) || sorted.indexOf(a) - sorted.indexOf(b))[0];
     if (fallback) return [first, fallback];
   }
 
-  // 追加比較：12〜20位の候補を対象に、勝利数が近い組を最大2回ずつ比較する。
-  const { wins } = qualifierStats();
+  // Freeze the review band from base results only. Review matches must not
+  // change who belongs to the band, otherwise the target can move mid-run.
+  const { wins, opponentStrength } = qualifierStats();
   const baseRank = [...qualifierPool].sort((a, b) =>
     (wins.get(b.id) || 0) - (wins.get(a.id) || 0) ||
+    (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
     a.name.localeCompare(b.name, "ja")
   );
   const reviewPool = baseRank.slice(11, 20);
+  const reviewIds = new Set(reviewPool.map(a => a.id));
   const reviewAppearances = new Map(reviewPool.map(a => [a.id, 0]));
   const reviewPairs = new Set();
-  for (const r of qualifierHistory) if (r.review) {
-    for (const id of r.groupIds || []) if (reviewAppearances.has(id)) reviewAppearances.set(id, reviewAppearances.get(id) + 1);
-    const a = qualifierPool.find(x => x.id === r.groupIds[0]);
-    const b = qualifierPool.find(x => x.id === r.groupIds[1]);
+  for (const r of qualifierHistory) {
+    if (!r.review || r.tieBreak) continue;
+    for (const id of r.groupIds || []) {
+      if (reviewAppearances.has(id)) reviewAppearances.set(id, reviewAppearances.get(id) + 1);
+    }
+    const a = qualifierPool.find(x => x.id === r.groupIds?.[0]);
+    const b = qualifierPool.find(x => x.id === r.groupIds?.[1]);
     if (a && b) reviewPairs.add(pairKey(a, b));
   }
-  const possible = [];
-  for (let i = 0; i < reviewPool.length; i++) for (let j = i + 1; j < reviewPool.length; j++) {
-    const a = reviewPool[i], b = reviewPool[j];
-    if (reviewAppearances.get(a.id) >= 2 || reviewAppearances.get(b.id) >= 2) continue;
-    if (Math.abs((wins.get(a.id) || 0) - (wins.get(b.id) || 0)) > 1) continue;
-    if (reviewPairs.has(pairKey(a, b))) continue;
-    possible.push({ a, b, distance: Math.abs(i-j), winDiff: Math.abs((wins.get(a.id)||0)-(wins.get(b.id)||0)) });
+
+  // Phase 2: at most two extra review comparisons per candidate in ranks 12–20.
+  // First compare similar win totals; if that graph runs out of pairs, relax the
+  // win-difference constraint so the phase always finishes.
+  const reviewCandidates = [];
+  for (let i = 0; i < reviewPool.length; i++) {
+    for (let j = i + 1; j < reviewPool.length; j++) {
+      const a = reviewPool[i], b = reviewPool[j];
+      if (reviewAppearances.get(a.id) >= 2 || reviewAppearances.get(b.id) >= 2) continue;
+      if (reviewPairs.has(pairKey(a, b))) continue;
+      const winDiff = Math.abs((wins.get(a.id) || 0) - (wins.get(b.id) || 0));
+      reviewCandidates.push({ a, b, winDiff, distance: Math.abs(i - j) });
+    }
   }
-  possible.sort((x, y) => x.winDiff - y.winDiff || x.distance - y.distance);
-  if (possible.length) {
-    const pair = [possible[0].a, possible[0].b];
+  if (reviewCandidates.length) {
+    reviewCandidates.sort((x, y) =>
+      (x.winDiff > 1 ? 1 : 0) - (y.winDiff > 1 ? 1 : 0) ||
+      x.winDiff - y.winDiff || x.distance - y.distance
+    );
+    const pair = [reviewCandidates[0].a, reviewCandidates[0].b];
     pair.review = true;
     return pair;
   }
 
-  // 16位の境界で完全同点の候補がいる場合は、該当者同士を追加比較。
-  const fullRank = [...qualifierPool].sort((a, b) =>
-    (wins.get(b.id) || 0) - (wins.get(a.id) || 0) ||
-    (qualifierStats().opponentStrength.get(b.id) || 0) - (qualifierStats().opponentStrength.get(a.id) || 0) ||
-    a.name.localeCompare(b.name, "ja")
-  );
-  if (fullRank.length > 16) {
-    const cutoff = fullRank[15];
-    const tied = fullRank.filter(a => (wins.get(a.id) || 0) === (wins.get(cutoff.id) || 0) &&
-      (qualifierStats().opponentStrength.get(a.id) || 0) === (qualifierStats().opponentStrength.get(cutoff.id) || 0));
-    for (let i = 0; i < tied.length; i++) for (let j = i + 1; j < tied.length; j++) {
-      const a = tied[i], b = tied[j];
+  // Phase 3: resolve only an actual tie straddling places 16/17.
+  // Comparing every pair in a large tied group can create dozens of needless
+  // questions and make the qualifier feel stuck. A single head-to-head updates
+  // tie-break wins; if the boundary is still exactly tied, another fresh pair
+  // is chosen, but a pair is never repeated in this phase.
+  const finalRank = rankQualifier();
+  if (finalRank.length > 16) {
+    const a = finalRank[15], b = finalRank[16];
+    const tieWins = new Map(qualifierPool.map(actor => [actor.id, 0]));
+    for (const r of qualifierHistory) {
+      if (r.tieBreak && tieWins.has(r.winnerId)) tieWins.set(r.winnerId, tieWins.get(r.winnerId) + 1);
+    }
+    const sameBaseRecord = (wins.get(a.id) || 0) === (wins.get(b.id) || 0) &&
+      (opponentStrength.get(a.id) || 0) === (opponentStrength.get(b.id) || 0);
+    if (sameBaseRecord && (tieWins.get(a.id) || 0) === (tieWins.get(b.id) || 0)) {
       const already = qualifierHistory.some(r => r.tieBreak && pairKey(
-        qualifierPool.find(x => x.id === r.groupIds[0]), qualifierPool.find(x => x.id === r.groupIds[1])
+        qualifierPool.find(x => x.id === r.groupIds?.[0]),
+        qualifierPool.find(x => x.id === r.groupIds?.[1])
       ) === pairKey(a, b));
-      if (!already) { const pair = [a,b]; pair.tieBreak = true; return pair; }
+      if (!already) { const pair = [a, b]; pair.tieBreak = true; return pair; }
     }
   }
   return null;
@@ -976,9 +1002,10 @@ function answerQualifier(winner) {
   qualifierCounts.set(winner.id, (qualifierCounts.get(winner.id) || 0) + 1);
   qualifierCounts.set(loser.id, (qualifierCounts.get(loser.id) || 0) + 1);
   qualifierQuestion++;
+  // The clicked button is replaced by renderQualifier, so release the lock
+  // before drawing the next pair. This keeps the new pair immediately usable.
+  qualifierAnswerLocked = false;
   renderQualifier();
-  // 画面更新直後に次のボタンへ飛ぶスマホの二重タップを防ぐ。
-  setTimeout(() => { qualifierAnswerLocked = false; comparisonList.style.pointerEvents = ""; [...comparisonList.querySelectorAll("button")].forEach(b => b.disabled = false); }, 500);
 }
 let replacementTargetId = null;
 function renderPrelimResults() {
