@@ -819,21 +819,17 @@ function rankQualifier(pool = qualifierPool) {
     (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
     a.name.localeCompare(b.name, "ja")
   );
-  // 追加比較は基本勝利数を上書きしない。まず基本勝利数、次に相手強度で順位を決め、
-  // それでも並ぶ場合に限って、12〜20位帯の追加比較結果を反映する。
-  // 以前の「勝利数 + 追加比較勝率」方式では、追加比較が1回だけの候補者が
-  // 追加比較の勝率だけで本戦通過ラインを飛び越えることがあった。
-  const reviewIds = new Set([...pool].sort((a, b) =>
-    (wins.get(b.id) || 0) - (wins.get(a.id) || 0) ||
-    (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
-    a.name.localeCompare(b.name, "ja")
-  ).slice(11, 20).map(a => a.id));
+  const reviewIds = new Set(baseRank.slice(11, 20).map(a => a.id));
+  // Review results are a tiebreaker only. They must never add a fractional
+  // "win" to the base score, because one extra review win could otherwise
+  // cancel a real base-win difference and let a lower-ranked candidate jump
+  // over someone who won more of the main comparisons.
   const reviewRate = a => reviewIds.has(a.id) && reviewCounts.get(a.id)
-    ? reviewWins.get(a.id) / reviewCounts.get(a.id) : -1;
+    ? reviewWins.get(a.id) / reviewCounts.get(a.id) : 0;
   return [...pool].sort((a, b) =>
     (wins.get(b.id) || 0) - (wins.get(a.id) || 0) ||
-    (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
     reviewRate(b) - reviewRate(a) ||
+    (opponentStrength.get(b.id) || 0) - (opponentStrength.get(a.id) || 0) ||
     (tieWins.get(b.id) || 0) - (tieWins.get(a.id) || 0) ||
     a.name.localeCompare(b.name, "ja")
   );
@@ -922,14 +918,10 @@ function chooseQualifierPair() {
     }
   }
   if (reviewCandidates.length) {
-    const boundaryIds = new Set([baseRank[15]?.id, baseRank[16]?.id].filter(Boolean));
-    reviewCandidates.sort((x, y) => {
-      const xBoundary = boundaryIds.has(x.a.id) || boundaryIds.has(x.b.id) ? 0 : 1;
-      const yBoundary = boundaryIds.has(y.a.id) || boundaryIds.has(y.b.id) ? 0 : 1;
-      return xBoundary - yBoundary ||
-        (x.winDiff > 1 ? 1 : 0) - (y.winDiff > 1 ? 1 : 0) ||
-        x.winDiff - y.winDiff || x.distance - y.distance;
-    });
+    reviewCandidates.sort((x, y) =>
+      (x.winDiff > 1 ? 1 : 0) - (y.winDiff > 1 ? 1 : 0) ||
+      x.winDiff - y.winDiff || x.distance - y.distance
+    );
     const pair = [reviewCandidates[0].a, reviewCandidates[0].b];
     pair.review = true;
     return pair;
