@@ -604,6 +604,7 @@ let candidates = [], groups = [], groupIndex = 0, groupSelections = [], winners 
 let currentMode = "all", selectedWorkIds = new Set();
 let stage = "prelim";
 let qualifierPool = [], qualifierResults = [], qualifierCounts = new Map(), qualifierAppearances = new Map(), qualifierQuestion = 0, qualifierCurrentGroup = null, qualifierHistory = [], qualifierRedoGroup = null, qualifierAnswerLocked = false;
+let qualifierRound = 1, qualifierRoundPairs = [], qualifierPairIndex = 0, qualifierRoundByeId = null, qualifierStageMode = "base", qualifierTiebreakPool = [], qualifierTiebreakPairs = [], qualifierTiebreakIndex = 0, qualifierTiebreakWins = new Map(), qualifierBaseRanking = [], qualifierByeHistory = [], qualifierTiebreakRound = 1;
 let finalPool = [], finalResults = [], finalCounts = new Map(), finalCurrentPair = null, finalRedoPair = null;
 let finalSortOrder = [], finalInsertOrder = [], finalInsertIndex = 1, finalLow = 0, finalHigh = 0, finalCurrentActor = null, finalHistory = [], finalAnswerLocked = false;
 
@@ -786,109 +787,212 @@ function rankByEvidence(pool, results, counts) {
     return y.rate - x.rate || y.wins - x.wins || x.losses - y.losses || y.appearances - x.appearances || a.name.localeCompare(b.name, "ja");
   });
 }
-// 予選は2択の対戦結果からElo風レーティングを再計算する。回数だけで順位を決めない。
-function qualifierRatings() {
-  const ratings = new Map(qualifierPool.map(a => [a.id, 1000]));
-  for (const r of qualifierHistory) {
-    const winner = ratings.get(r.winnerId) ?? 1000;
-    const loser = ratings.get(r.loserIds[0]) ?? 1000;
-    const expectedWinner = 1 / (1 + Math.pow(10, (loser - winner) / 400));
-    const expectedLoser = 1 - expectedWinner;
-    ratings.set(r.winnerId, winner + 32 * (1 - expectedWinner));
-    ratings.set(r.loserIds[0], loser + 32 * (0 - expectedLoser));
-  }
-  return ratings;
+// 予選：4ラウンドのスイスドロー。基本成績とボーダー追加比較は分けて管理する。
+function pairKey(a, b) {
+  const ids = [typeof a === "string" ? a : a?.id, typeof b === "string" ? b : b?.id].filter(Boolean).sort();
+  return ids.join("::");
 }
+function baseHistory() { return qualifierHistory.filter(r => r.phase !== "tiebreak"); }
+function baseWinsMap() {
+  const wins = new Map(qualifierPool.map(a => [a.id, 0]));
+  for (const r of baseHistory()) wins.set(r.winnerId, (wins.get(r.winnerId) || 0) + 1);
+  return wins;
+}
+function opponentStrengthMap() {
+  const wins = baseWinsMap();
+  const strength = new Map(qualifierPool.map(a => [a.id, 0]));
+  for (const r of baseHistory()) {
+    for (const id of r.groupIds || []) {
+      if (id !== r.winnerId && id !== r.loserIds?.[0]) continue;
+      strength.set(id, (strength.get(id) || 0) + (wins.get(id === r.winnerId ? r.loserIds[0] : r.winnerId) || 0));
+    }
+  }
+  return strength;
+}
+function baseAppearances(id) { return baseHistory().filter(r => (r.groupIds || []).includes(id)).length; }
+function playedBasePairs() { return new Set(baseHistory().map(r => pairKey(r.groupIds?.[0], r.groupIds?.[1]))); }
 function rankQualifier(pool = qualifierPool) {
-  const ratings = qualifierRatings();
-  const wins = new Map(pool.map(a => [a.id, 0]));
-  for (const r of qualifierHistory) wins.set(r.winnerId, (wins.get(r.winnerId) || 0) + 1);
-  return [...pool].sort((a, b) => (ratings.get(b.id) || 1000) - (ratings.get(a.id) || 1000) || (wins.get(b.id) || 0) - (wins.get(a.id) || 0) || a.name.localeCompare(b.name, "ja"));
+  const wins = baseWinsMap(), strength = opponentStrengthMap();
+  return [...pool].sort((a,b) => (wins.get(b.id)||0)-(wins.get(a.id)||0) || (strength.get(b.id)||0)-(strength.get(a.id)||0) || a.name.localeCompare(b.name,"ja"));
 }
-function pairKey(a, b) { return [a.id, b.id].sort().join("::"); }
-function qualifierPlayedPairs() {
-  return new Set(qualifierHistory.map(r => pairKey(qualifierPool.find(a => a.id === r.groupIds[0]), qualifierPool.find(a => a.id === r.groupIds[1]))));
+function makeSwissRoundPairs() {
+  const wins = baseWinsMap();
+  const played = playedBasePairs();
+  let remaining = shuffle([...qualifierPool]).sort((a,b) => (wins.get(b.id)||0)-(wins.get(a.id)||0));
+  const pairs = [];
+  let bye = null;
+  if (remaining.length % 2) {
+    // Bye is rotated across rounds; it is not a win and will be compensated after round 4.
+    const byeCandidates = remaining.filter(a => !qualifierByeHistory.includes(a.id));
+    bye = (byeCandidates.length ? shuffle(byeCandidates) : shuffle(remaining)).sort((a,b) => baseAppearances(a.id)-baseAppearances(b.id))[0];
+    remaining = remaining.filter(a => a.id !== bye.id);
+  }
+  while (remaining.length) {
+    const first = remaining.shift();
+    let bestIndex = -1, bestScore = Infinity;
+    remaining.forEach((opponent, index) => {
+      const rematch = played.has(pairKey(first, opponent)) ? 100000 : 0;
+      const scoreGap = Math.abs((wins.get(first.id)||0)-(wins.get(opponent.id)||0))*100;
+      const appearanceGap = Math.abs(baseAppearances(first.id)-baseAppearances(opponent.id))*10;
+      const score = rematch + scoreGap + appearanceGap + Math.random();
+      if (score < bestScore) { bestScore = score; bestIndex = index; }
+    });
+    if (bestIndex < 0) break;
+    pairs.push([first, remaining.splice(bestIndex,1)[0]]);
+  }
+  qualifierRoundByeId = bye?.id || null;
+  if (bye?.id) qualifierByeHistory.push(bye.id);
+  return pairs;
 }
-function chooseQualifierPair() {
-  if (qualifierRedoGroup) {
-    const ids = qualifierRedoGroup; qualifierRedoGroup = null;
-    const pair = ids.map(id => qualifierPool.find(a => a.id === id)).filter(Boolean);
-    if (pair.length === 2) return pair;
+function makeBalancingPairs() {
+  const played = playedBasePairs();
+  const under = shuffle([...qualifierPool].filter(a => baseAppearances(a.id) < 4))
+    .sort((a,b) => baseAppearances(a.id)-baseAppearances(b.id));
+  const pairs = [];
+  while (under.length >= 2) {
+    const first = under.shift();
+    let idx = under.findIndex(a => !played.has(pairKey(first,a)));
+    if (idx < 0) idx = 0;
+    const second = under.splice(idx,1)[0];
+    pairs.push([first, second]);
   }
-  const played = qualifierPlayedPairs();
-  const appearances = id => qualifierAppearances.get(id) || 0;
-  const sorted = rankQualifier();
-
-  // 第1段階：全員に最低2回ずつ比較機会を与える。未登場・登場不足を優先する。
-  const underplayed = sorted.filter(a => appearances(a.id) < 2);
-  if (underplayed.length) {
-    const first = [...underplayed].sort((a, b) => appearances(a.id) - appearances(b.id) || Math.random() - 0.5)[0];
-    const opponents = sorted.filter(a => a.id !== first.id && !played.has(pairKey(first, a)) && appearances(a.id) < 3)
-      .sort((a, b) => appearances(a.id) - appearances(b.id) || Math.abs((sorted.indexOf(a)) - (sorted.indexOf(first))) - Math.abs((sorted.indexOf(b)) - (sorted.indexOf(first))));
-    if (opponents.length) return [first, opponents[0]];
-    const fallback = sorted.find(a => a.id !== first.id && !played.has(pairKey(first, a)));
-    if (fallback) return [first, fallback];
+  // With four rounds, an odd-sized pool yields four one-bye candidates, so they pair evenly.
+  // Defensive fallback for any unusual state: a remaining candidate is paired with the least-played opponent.
+  if (under.length) {
+    const first = under[0];
+    const second = shuffle(qualifierPool.filter(a => a.id !== first.id)).sort((a,b) => baseAppearances(a.id)-baseAppearances(b.id))[0];
+    if (second) pairs.push([first,second]);
   }
-
-  // 第2段階：16位前後の境界を重点比較。各人の予選登場は最大4回、同じ組み合わせは再利用しない。
-  const boundary = sorted.filter((a, i) => i >= 8 && i <= 23 && appearances(a.id) < 4);
-  const options = [];
-  for (let i = 0; i < boundary.length; i++) for (let j = i + 1; j < boundary.length; j++) {
-    const a = boundary[i], b = boundary[j];
-    if (played.has(pairKey(a, b))) continue;
-    const ia = sorted.findIndex(x => x.id === a.id), ib = sorted.findIndex(x => x.id === b.id);
-    const crossesCut = (ia < 16) !== (ib < 16);
-    const ratingGap = Math.abs((qualifierRatings().get(a.id) || 1000) - (qualifierRatings().get(b.id) || 1000));
-    options.push({ pair: [a, b], score: (crossesCut ? 0 : 100) + ratingGap + (appearances(a.id) + appearances(b.id)) * 5 + Math.abs((ia + ib) / 2 - 15.5) });
-  }
-  options.sort((a, b) => a.score - b.score);
-  if (options.length) return options[0].pair;
-  return null;
+  return pairs;
+}
+function findCutoffTies(ranked) {
+  if (ranked.length <= 16) return [];
+  const wins = baseWinsMap(), strength = opponentStrengthMap();
+  const cutoff = ranked[15];
+  return ranked.filter(a => (wins.get(a.id)||0) === (wins.get(cutoff.id)||0) && (strength.get(a.id)||0) === (strength.get(cutoff.id)||0));
+}
+function startTiebreak(tied) {
+  qualifierStageMode = "tiebreak";
+  qualifierTiebreakPool = tied;
+  qualifierTiebreakWins = new Map(tied.map(a => [a.id, 0]));
+  qualifierTiebreakPairs = [];
+  for (let i=0;i<tied.length;i++) for (let j=i+1;j<tied.length;j++) qualifierTiebreakPairs.push([tied[i],tied[j]]);
+  qualifierTiebreakPairs = shuffle(qualifierTiebreakPairs);
+  qualifierTiebreakIndex = 0; qualifierTiebreakRound = 1;
 }
 function startQualifier(list) {
-  qualifierPool = uniqueActors(list); qualifierResults = []; qualifierCounts = new Map(qualifierPool.map(a => [a.id, 0])); qualifierAppearances = new Map(qualifierPool.map(a => [a.id, 0])); qualifierQuestion = 0; qualifierHistory = []; qualifierRedoGroup = null; qualifierAnswerLocked = false;
+  qualifierPool = uniqueActors(list);
+  qualifierResults = []; qualifierCounts = new Map(qualifierPool.map(a => [a.id,0]));
+  qualifierAppearances = new Map(qualifierPool.map(a => [a.id,0])); qualifierQuestion = 0; qualifierHistory = [];
+  qualifierRedoGroup = null; qualifierAnswerLocked = false; qualifierRound = 1; qualifierRoundPairs = [];
+  qualifierPairIndex = 0; qualifierRoundByeId = null; qualifierStageMode = "base"; qualifierTiebreakPool = [];
+  qualifierTiebreakPairs = []; qualifierTiebreakIndex = 0; qualifierTiebreakWins = new Map(); qualifierBaseRanking = []; qualifierByeHistory = []; qualifierTiebreakRound = 1;
+  qualifierRoundPairs = makeSwissRoundPairs();
   stage = "qualifier"; renderQualifier();
 }
-function renderQualifier() {
-  const group = chooseQualifierPair();
-  if (!group || group.length !== 2) {
-    winners = rankQualifier().slice(0, 16);
-    renderPrelimResults();
-    return;
+function prepareNextQualifierStep() {
+  if (qualifierStageMode === "tiebreak") {
+    if (qualifierTiebreakIndex < qualifierTiebreakPairs.length) return;
+    const topWins = Math.max(...qualifierTiebreakPool.map(a => qualifierTiebreakWins.get(a.id)||0));
+    const top = qualifierTiebreakPool.filter(a => (qualifierTiebreakWins.get(a.id)||0) === topWins);
+    if (top.length > 1 && qualifierTiebreakRound < 2) {
+      // One further mini-round is played only among the still-tied candidates.
+      qualifierTiebreakRound++;
+      qualifierTiebreakPool = top;
+      qualifierTiebreakWins = new Map(top.map(a => [a.id, 0]));
+      qualifierTiebreakPairs = [];
+      for (let i=0;i<top.length;i++) for (let j=i+1;j<top.length;j++) qualifierTiebreakPairs.push([top[i],top[j]]);
+      qualifierTiebreakPairs = shuffle(qualifierTiebreakPairs);
+      qualifierTiebreakIndex = 0;
+      renderQualifier(); return;
+    }
+    if (top.length === 1) {
+      const tiedIds = new Set(qualifierTiebreakPool.map(a=>a.id));
+      const ranked = qualifierBaseRanking.filter(a=>!tiedIds.has(a.id));
+      const cutoffWasTie = qualifierBaseRanking.findIndex(a=>a.id===qualifierTiebreakPool[0].id) < 16;
+      // Only the tied cutoff group is reordered; remaining qualifiers keep their base ranking.
+      const insertion = Math.min(...qualifierTiebreakPool.map(a=>qualifierBaseRanking.findIndex(x=>x.id===a.id)));
+      const chosen = shuffle(top);
+      const orderedTied = [...top, ...qualifierTiebreakPool.filter(a=>!top.some(t=>t.id===a.id))];
+      const merged = [...qualifierBaseRanking];
+      const positions = qualifierTiebreakPool.map(a=>merged.findIndex(x=>x.id===a.id)).sort((a,b)=>a-b);
+      positions.forEach((pos,i)=>{ if (orderedTied[i]) merged[pos]=orderedTied[i]; });
+      winners = merged.slice(0,16); renderPrelimResults(); return;
+    }
+    // If a full round-robin still leaves a tie, draw randomly among the tied candidates.
+    const lucky = shuffle(top)[0];
+    const tiedIds = new Set(qualifierTiebreakPool.map(a=>a.id));
+    const positions = qualifierTiebreakPool.map(a=>qualifierBaseRanking.findIndex(x=>x.id===a.id)).sort((a,b)=>a-b);
+    const merged = [...qualifierBaseRanking];
+    const order = [lucky, ...shuffle(qualifierTiebreakPool.filter(a=>a.id!==lucky.id))];
+    positions.forEach((pos,i)=>{if(order[i]) merged[pos]=order[i];});
+    winners = merged.slice(0,16); renderPrelimResults(); return;
   }
+  if (qualifierPairIndex < qualifierRoundPairs.length) return;
+  if (qualifierRound < 4) {
+    qualifierRound++;
+    qualifierRoundPairs = makeSwissRoundPairs(); qualifierPairIndex = 0;
+    renderQualifier(); return;
+  }
+  if (qualifierStageMode === "base") {
+    const under = qualifierPool.filter(a=>baseAppearances(a.id)<4);
+    if (under.length) {
+      qualifierStageMode = "balance"; qualifierRoundPairs = makeBalancingPairs(); qualifierPairIndex=0;
+      if (qualifierRoundPairs.length) { renderQualifier(); return; }
+    }
+    qualifierBaseRanking = rankQualifier();
+    const tied = findCutoffTies(qualifierBaseRanking);
+    if (tied.length > 1) { startTiebreak(tied); renderQualifier(); return; }
+    winners = qualifierBaseRanking.slice(0,16); renderPrelimResults();
+  } else if (qualifierStageMode === "balance") {
+    qualifierBaseRanking = rankQualifier();
+    const tied = findCutoffTies(qualifierBaseRanking);
+    if (tied.length > 1) { startTiebreak(tied); renderQualifier(); return; }
+    winners = qualifierBaseRanking.slice(0,16); renderPrelimResults();
+  }
+}
+function renderQualifier() {
+  prepareNextQualifierStep();
+  if (stage === "prelimResults") return;
+  let group = null;
+  if (qualifierRedoGroup) {
+    group = qualifierRedoGroup.map(id=>qualifierPool.find(a=>a.id===id)).filter(Boolean); qualifierRedoGroup=null;
+  } else if (qualifierStageMode === "tiebreak") {
+    group = qualifierTiebreakPairs[qualifierTiebreakIndex] || null;
+  } else {
+    group = qualifierRoundPairs[qualifierPairIndex] || null;
+  }
+  if (!group || group.length !== 2) { prepareNextQualifierStep(); return; }
   qualifierCurrentGroup = group;
-  comparisonList.innerHTML = "";
-  comparisonList.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
+  comparisonList.innerHTML = ""; comparisonList.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
   comparisonList.style.pointerEvents = qualifierAnswerLocked ? "none" : "";
-  document.getElementById("comparison-title").textContent = "予選：16人に絞り込もう";
-  document.getElementById("comparison-instruction").textContent = "2人のうち、好きな声優を選んでね。選ぶとすぐ次へ進むよ。";
+  document.getElementById("comparison-title").textContent = qualifierStageMode === "tiebreak" ? "予選：16位ボーダー追加比較" : "予選：16人に絞り込もう";
+  document.getElementById("comparison-instruction").textContent = "2人のうち、好きな声優を選んでね。選ぶと次の比較へ進むよ。";
   prelimActions.hidden = true; finalActions.hidden = true;
   document.getElementById("previous-button").textContent = "一つ前の比較へ";
   document.getElementById("previous-button").disabled = qualifierHistory.length === 0;
-  comparisonProgress.textContent = `予選・2択比較 ${qualifierQuestion + 1} 回目（候補 ${qualifierPool.length} 人）`;
-  comparisonMessage.textContent = "全員に最低2回の比較機会を設け、その後は16位前後を重点比較するよ。同じ組み合わせは繰り返さず、各人の登場は最大4回。";
-  group.forEach(actor => {
-    const b = makeActorChoice(actor, false, () => answerQualifier(actor));
-    b.disabled = qualifierAnswerLocked;
-    comparisonList.appendChild(b);
-  });
+  const stageLabel = qualifierStageMode === "tiebreak" ? "ボーダー追加比較" : qualifierStageMode === "balance" ? "比較回数の調整" : `基本予選 ${qualifierRound}/4ラウンド`;
+  comparisonProgress.textContent = `${stageLabel}・比較 ${qualifierQuestion+1} 回目（候補 ${qualifierPool.length} 人）`;
+  comparisonMessage.textContent = qualifierStageMode === "tiebreak" ? "16位の同率候補だけを追加比較中だよ。追加比較の勝ち数は基本予選の順位と分けて記録するよ。" : qualifierStageMode === "balance" ? "奇数人数による比較回数の差を調整しているよ。不戦は勝ちに数えないよ。" : "勝ち数が近い人同士を優先して4ラウンド比較するよ。同じ相手との再戦はできるだけ避けるよ。";
+  group.forEach(actor=>{ const b=makeActorChoice(actor,false,()=>answerQualifier(actor)); b.disabled=qualifierAnswerLocked; comparisonList.appendChild(b); });
 }
 function answerQualifier(winner) {
-  if (qualifierAnswerLocked) return;
-  const group = qualifierCurrentGroup;
-  if (!group || !group.some(a => a.id === winner.id)) return;
-  qualifierAnswerLocked = true;
-  const loser = group.find(a => a.id !== winner.id);
-  const result = { winnerId: winner.id, loserIds: [loser.id], groupIds: group.map(a => a.id) };
-  qualifierHistory.push(result);
-  qualifierResults.push({ winnerId: winner.id, loserId: loser.id });
-  result.groupIds.forEach(id => qualifierAppearances.set(id, (qualifierAppearances.get(id) || 0) + 1));
-  qualifierCounts.set(winner.id, (qualifierCounts.get(winner.id) || 0) + 1);
-  qualifierCounts.set(loser.id, (qualifierCounts.get(loser.id) || 0) + 1);
+  if (qualifierAnswerLocked || !qualifierCurrentGroup || !qualifierCurrentGroup.some(a=>a.id===winner.id)) return;
+  qualifierAnswerLocked=true;
+  const loser=qualifierCurrentGroup.find(a=>a.id!==winner.id);
+  const phase=qualifierStageMode;
+  const result={winnerId:winner.id,loserIds:[loser.id],groupIds:qualifierCurrentGroup.map(a=>a.id),phase,round:qualifierRound};
+  qualifierHistory.push(result); qualifierResults.push({winnerId:winner.id,loserId:loser.id});
+  result.groupIds.forEach(id=>qualifierAppearances.set(id,(qualifierAppearances.get(id)||0)+1));
+  qualifierCounts.set(winner.id,(qualifierCounts.get(winner.id)||0)+1); qualifierCounts.set(loser.id,(qualifierCounts.get(loser.id)||0)+1);
+  if (phase === "tiebreak") {
+    qualifierTiebreakWins.set(winner.id,(qualifierTiebreakWins.get(winner.id)||0)+1);
+    qualifierTiebreakIndex++;
+  } else if (phase === "balance") qualifierPairIndex++;
+  else qualifierPairIndex++;
   qualifierQuestion++;
   renderQualifier();
-  // 画面更新直後に次のボタンへ飛ぶスマホの二重タップを防ぐ。
-  setTimeout(() => { qualifierAnswerLocked = false; comparisonList.style.pointerEvents = ""; [...comparisonList.querySelectorAll("button")].forEach(b => b.disabled = false); }, 500);
+  setTimeout(()=>{qualifierAnswerLocked=false;comparisonList.style.pointerEvents="";[...comparisonList.querySelectorAll("button")].forEach(b=>b.disabled=false);},450);
 }
 let replacementTargetId = null;
 function renderPrelimResults() {
@@ -1159,7 +1263,7 @@ nextButton.addEventListener("click",()=>{if(stage==="prelim")finishPrelimGroup()
 document.getElementById("previous-button").addEventListener("click",()=>{
   if(stage==="prelimResults"){groupIndex=0;winners=[];addedActors=[];groupSelections=[];renderGroup();}
   else if(stage==="prelim"&&groupIndex>0){groupIndex--;renderGroup();}
-  else if(stage==="qualifier"&&qualifierHistory.length){qualifierAnswerLocked=false;const prev=qualifierHistory.pop();qualifierResults.pop();qualifierCounts.set(prev.winnerId,Math.max(0,(qualifierCounts.get(prev.winnerId)||0)-1));prev.loserIds.forEach(id=>qualifierCounts.set(id,Math.max(0,(qualifierCounts.get(id)||0)-1)));prev.groupIds.forEach(id=>qualifierAppearances.set(id,Math.max(0,(qualifierAppearances.get(id)||0)-1)));qualifierQuestion--;qualifierRedoGroup=prev.groupIds;renderQualifier();}
+  else if(stage==="qualifier"&&qualifierHistory.length){qualifierAnswerLocked=false;const prev=qualifierHistory.pop();qualifierResults.pop();qualifierCounts.set(prev.winnerId,Math.max(0,(qualifierCounts.get(prev.winnerId)||0)-1));prev.loserIds.forEach(id=>qualifierCounts.set(id,Math.max(0,(qualifierCounts.get(id)||0)-1)));prev.groupIds.forEach(id=>qualifierAppearances.set(id,Math.max(0,(qualifierAppearances.get(id)||0)-1)));if(prev.phase==="tiebreak"){qualifierTiebreakWins.set(prev.winnerId,Math.max(0,(qualifierTiebreakWins.get(prev.winnerId)||0)-1));qualifierTiebreakIndex=Math.max(0,qualifierTiebreakIndex-1);}else qualifierPairIndex=Math.max(0,qualifierPairIndex-1);qualifierQuestion--;qualifierRedoGroup=prev.groupIds;renderQualifier();}
   else if(stage==="final"&&finalHistory.length){const snap=finalHistory.pop();restoreFinalSnapshot(snap);renderFinal();}
 });
 document.querySelectorAll("[data-back]").forEach(b=>b.addEventListener("click",()=>showScreen("mode")));
