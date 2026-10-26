@@ -122,6 +122,11 @@
     .quick-actor-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:12px 0; }
     .quick-actor-option { display:flex; align-items:flex-start; gap:7px; padding:9px; border:1px solid #ecd5e2; border-radius:10px; background:#fffafd; font-size:13px; overflow-wrap:anywhere; }
     .quick-actor-option input { accent-color:#a85f88; flex:0 0 auto; margin-top:3px; }
+    .quick-selected-toggle { width:100%; margin:8px 0 4px; padding:12px 14px; border:2px solid #dba7c4; border-radius:12px; background:#fff; color:#925273; font:inherit; font-weight:bold; cursor:pointer; }
+    .quick-selected-panel { margin:8px 0 14px; padding:12px 14px; border:1px solid #edcddd; border-radius:12px; background:#fff8fc; }
+    .quick-selected-panel ol { margin:0; padding-left:24px; line-height:1.8; }
+    .quick-selected-empty { margin:0; color:#988693; font-size:13px; }
+    #comparison-instruction.candidate-count { margin:14px 0 18px; padding:14px 16px; border:2px solid #e5bfd4; border-radius:14px; background:#fff0f7; color:#985075; font-size:clamp(19px, 4.5vw, 24px); line-height:1.5; font-weight:800; }
     .quick-actor-option small { display:block; margin-top:3px; color:#927b8c; font-size:10px; line-height:1.35; }
     .actor-avatar { flex: 0 0 46px; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border-radius: 15px; font-size: 23px; font-weight: bold; box-shadow: inset 0 0 0 1px #ffffffaa; transition: transform .15s ease; }
     .choice-button:hover .actor-avatar { transform: rotate(-4deg) scale(1.04); }
@@ -551,6 +556,11 @@
       </div>
       <p class="help-text">追加した声優もこの回の候補に入るよ。候補から外すときはチェックを外してね。</p>
       <p id="quick-count" class="help-text" aria-live="polite">0人選択中（9〜16人）</p>
+      <button id="quick-selected-toggle" class="quick-selected-toggle" type="button" aria-expanded="false" aria-controls="quick-selected-panel">選択中の声優を見る（0人）</button>
+      <div id="quick-selected-panel" class="quick-selected-panel" hidden>
+        <ol id="quick-selected-list"></ol>
+        <p id="quick-selected-empty" class="quick-selected-empty">まだ声優が選ばれていないよ。</p>
+      </div>
       <div id="quick-actor-list" class="quick-actor-list"></div>
       <p id="quick-message" class="help-text" aria-live="polite"></p>
       <button class="primary-button" id="quick-start-button" disabled>選んだ声優でソート開始</button>
@@ -805,6 +815,8 @@ function renderGroup() {
   stage = "prelim"; const group = groups[groupIndex] || [];
   comparisonList.innerHTML = ""; comparisonList.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
   document.getElementById("comparison-title").textContent = "予選：好きな声を選ぼう";
+  document.getElementById("comparison-instruction").classList.remove("candidate-count");
+  document.querySelector(".sample-link-note").hidden = false;
   document.getElementById("comparison-instruction").textContent = "好きな人を選んでね（複数OK）。もう一度押すと解除できるよ。";
   prelimActions.hidden = false; finalActions.hidden = true; nextButton.hidden = false;
   nextButton.textContent = groupIndex === groups.length - 1 ? "次へ" : "次のグループへ";
@@ -1022,6 +1034,8 @@ function renderQualifier() {
   comparisonList.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
   comparisonList.style.pointerEvents = qualifierAnswerLocked ? "none" : "";
   document.getElementById("comparison-title").textContent = "予選：16人に絞り込もう";
+  document.getElementById("comparison-instruction").classList.remove("candidate-count");
+  document.querySelector(".sample-link-note").hidden = false;
   document.getElementById("comparison-instruction").textContent = "2人のうち、好きな声優を選んでね。選ぶとすぐ次へ進むよ。";
   prelimActions.hidden = true; finalActions.hidden = true;
   document.getElementById("previous-button").textContent = "一つ前の比較へ";
@@ -1075,7 +1089,10 @@ function renderPrelimResults() {
   stage = "prelimResults"; comparisonList.innerHTML = ""; comparisonList.style.gridTemplateColumns = "1fr";
   const pool = uniqueActors([...winners, ...addedActors]);
   document.getElementById("comparison-title").textContent = "本戦出場候補";
-  document.getElementById("comparison-instruction").textContent = pool.length < 9 ? `候補は${pool.length}人。あと${9-pool.length}人以上追加してね。` : `本戦候補は ${pool.length} 人。順位はまだつけず、名前だけ確認できるよ。`;
+  const candidateInstruction = document.getElementById("comparison-instruction");
+  candidateInstruction.classList.add("candidate-count");
+  document.querySelector(".sample-link-note").hidden = true;
+  candidateInstruction.textContent = pool.length < 9 ? `候補は${pool.length}人。あと${9-pool.length}人以上追加してね。` : `本戦候補は ${pool.length} 人。順位はまだつけず、名前だけ確認できるよ。`;
   comparisonProgress.textContent = "本戦出場候補リスト"; prelimActions.hidden = true; finalActions.hidden = false;
   document.getElementById("previous-button").textContent = "最初の予選へ戻る"; document.getElementById("previous-button").disabled = false;
   const list = document.getElementById("prelim-result-list"); list.innerHTML = "";
@@ -1279,9 +1296,28 @@ function renderQuickActors() {
   updateQuickCount();
 }
 function updateQuickCount() {
-  const n = quickSelectedIds.size; document.getElementById("quick-count").textContent = `${n}人選択中（9〜16人）`;
+  const n = quickSelectedIds.size;
+  document.getElementById("quick-count").textContent = `${n}人選択中（9〜16人）`;
   document.getElementById("quick-start-button").disabled = n < 9 || n > 16;
-}
+  document.getElementById("quick-selected-toggle").textContent = `選択中の声優を見る（${n}人）`;
+  const selectedList = document.getElementById("quick-selected-list");
+  const empty = document.getElementById("quick-selected-empty");
+  selectedList.innerHTML = "";
+  const selectedActors = [...quickSelectedIds].map(id => quickManualActors.get(id) || voiceActors.find(actor => actor.id === id)).filter(Boolean);
+  selectedActors.forEach(actor => {
+    const item = document.createElement("li");
+    item.textContent = actor.name;
+    selectedList.appendChild(item);
+  });
+  empty.hidden = selectedActors.length > 0;
+  selectedList.hidden = selectedActors.length === 0;
+} 
+document.getElementById("quick-selected-toggle").addEventListener("click", () => {
+  const panel = document.getElementById("quick-selected-panel");
+  const button = document.getElementById("quick-selected-toggle");
+  panel.hidden = !panel.hidden;
+  button.setAttribute("aria-expanded", String(!panel.hidden));
+});
 document.getElementById("quick-search").addEventListener("input", renderQuickActors);
 document.getElementById("quick-add-actor-button").addEventListener("click", () => {
   const input = document.getElementById("quick-add-actor-input");
