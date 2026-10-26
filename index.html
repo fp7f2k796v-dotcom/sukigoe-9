@@ -1539,7 +1539,12 @@ function drawResultImage() {
   });
   return canvas;
 }
-function getShareBaseUrl() { return window.location.href.split("#")[0]; }
+function getShareBaseUrl() {
+  const url = new URL(window.location.href);
+  url.hash = "";
+  url.searchParams.set("v", "4");
+  return url.toString();
+}
 function shareText(imageMode) {
   const player=document.getElementById("player-name").value.trim();
   const rows=getResultRows();
