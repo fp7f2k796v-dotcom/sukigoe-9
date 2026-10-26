@@ -475,6 +475,19 @@
     .aggregate-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
     .aggregate-table th, .aggregate-table td { padding: 8px; border-bottom: 1px solid #f0dce6; text-align: left; }
     .aggregate-table th { color: #a34f7a; }
+    /* 全体ランキングと「1位別」セクションの間に余白を設け、見出しを明確にする */
+    #aggregate-results .aggregate-table + h4,
+    #aggregate-results-home .aggregate-table + h4 {
+      margin-top: 38px;
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      border-left: 5px solid #a85f88;
+      border-radius: 10px;
+      background: #fff3f9;
+      color: #514550;
+      font-size: 20px;
+      line-height: 1.5;
+    }
     /* 全体ランキング：順位の数字だけを1位ゴールド、2位グリーン、3位ブルーで強調 */
     .aggregate-table .top-rank-1 td:first-child { color: #a87918; font-weight: 800; }
     .aggregate-table .top-rank-2 td:first-child { color: #367d61; font-weight: 800; }
