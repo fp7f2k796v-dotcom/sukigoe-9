@@ -590,7 +590,7 @@
   <main>
     <section class="panel welcome-panel" id="home-screen">
       <h2>あなたの好き声を見つけよう</h2>
-      <p>気になる声を聴き比べて、あなただけのTOP9を作ろう♡</p>
+      <p>好きな声優を選んで比べて、あなただけのTOP9を作ろう♡</p>
       <button class="primary-button" id="begin-button">START</button>
       <section class="aggregate-home-card" aria-labelledby="home-aggregate-title">
         <h3 id="home-aggregate-title">みんなの好き声集計</h3>
@@ -613,23 +613,23 @@
 
     <section class="panel" id="mode-screen" hidden>
       <h2 class="mode-heading">どこから選ぶ？</h2>
-      <p class="mode-intro">自分に合った方法を選んでね。</p>
+      <p class="mode-intro">自分に合った方法を選んでください。</p>
       <div class="mode-list">
         <button class="mode-button" data-mode="work">
           <span class="mode-title-row"><span class="mode-title">📚 作品から選ぶ</span><span class="mode-description">女性向け作品が好き</span></span>
-          <span class="mode-detail">刀剣乱舞、A3!、まほやくなど。基本はメインキャラで、声優以外の出演者も含むよ。</span>
+          <span class="mode-detail">刀剣乱舞、A3!、まほやくなど。基本はメインキャラで、声優以外の出演者も含む。</span>
         </button>
         <button class="mode-button" data-mode="regular">
           <span class="mode-title-row"><span class="mode-title">🎙️ 定番声優から選ぶ</span><span class="mode-description">名前がある程度わかる</span></span>
-          <span class="mode-detail">女性向け作品でおなじみの声優が中心。リストにいない声優は、あとから追加できるよ。</span>
+          <span class="mode-detail">女性向け作品でおなじみの声優が中心。リストにいない声優は、あとから追加可能。</span>
         </button>
         <button class="mode-button" data-mode="all">
           <span class="mode-title-row"><span class="mode-title">🎧 全声優から選ぶ</span><span class="mode-description">声優に詳しい</span></span>
-          <span class="mode-detail">作品リストに登録された声優から選ぶよ。リストにいない声優は、あとから追加できるよ。</span>
+          <span class="mode-detail">作品リストに登録された声優から選ぶ。リストにいない声優は、あとから追加可能。</span>
         </button>
         <button class="mode-button" data-mode="quick">
           <span class="mode-title-row"><span class="mode-title">⚡ 忙しい人のための好き声9選</span><span class="mode-description">自分で候補を絞る</span></span>
-          <span class="mode-detail">登録済み・未登録の声優を9〜16人集めて、予選なしですぐ本戦！</span>
+          <span class="mode-detail">声優を9〜16人集めて、予選なしですぐ本戦！</span>
         </button>
       </div>
       <button class="back-button" id="mode-back-button">トップへ戻る</button>
@@ -637,7 +637,7 @@
 
     <section class="panel" id="quick-screen" hidden>
       <h2>忙しい人のための好き声9選</h2>
-      <p class="help-text">登録済みの声優を選ぶか、リストにいない声優を名前で追加してね。候補を9〜16人そろえたら、予選なしですぐ本戦！</p>
+      <p class="help-text">登録済みの声優を選ぶか、リストにいない声優を名前で追加してください。候補を9〜16人そろえたら、予選なしですぐ本戦！</p>
       <input id="quick-search" type="search" placeholder="声優名で検索" aria-label="声優名で検索" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ecd5e2;border-radius:10px;font:inherit;margin:8px 0;">
       <p class="help-text">五十音で絞り込む</p>
       <div id="quick-kana-filter" class="work-filter" aria-label="声優を五十音で絞り込む"></div>
@@ -645,12 +645,12 @@
         <input id="quick-add-actor-input" type="text" maxlength="80" placeholder="リストにいない声優名を入力" aria-label="追加する声優名">
         <button class="secondary-button" id="quick-add-actor-button" type="button">候補に追加</button>
       </div>
-      <p class="help-text">追加した声優もこの回の候補に入るよ。候補から外すときはチェックを外してね。</p>
+      <p class="help-text">追加した声優もこの回の候補に入ります。候補から外すときはチェックを外してください。</p>
       <p id="quick-count" class="help-text" aria-live="polite">0人選択中（9〜16人）</p>
       <button id="quick-selected-toggle" class="quick-selected-toggle" type="button" aria-expanded="false" aria-controls="quick-selected-panel">選択中の声優を見る（0人）</button>
       <div id="quick-selected-panel" class="quick-selected-panel" hidden>
         <ol id="quick-selected-list"></ol>
-        <p id="quick-selected-empty" class="quick-selected-empty">まだ声優が選ばれていないよ。</p>
+        <p id="quick-selected-empty" class="quick-selected-empty">選択中の声優はいません。</p>
       </div>
       <div id="quick-actor-list" class="quick-actor-list"></div>
       <p id="quick-message" class="help-text" aria-live="polite"></p>
@@ -659,8 +659,8 @@
     </section>
 
     <section class="panel" id="work-screen" hidden>
-      <h2>好きな作品を選んでね</h2>
-      <p class="help-text">複数選択できるよ！ 五十音で絞り込めるよ。</p>
+      <h2>好きな作品を選ぶ</h2>
+      <p class="help-text">複数選択可！ 五十音で絞り込めます。</p>
       <div id="work-filter" class="work-filter" aria-label="作品を五十音で絞り込む"></div>
       <div id="work-list"></div>
       <p id="work-message" class="help-text"></p>
@@ -673,7 +673,7 @@
     <section class="panel" id="comparison-screen" hidden>
       <h2 id="comparison-title">予選：どの声が好き？</h2>
       <p id="comparison-progress" class="help-text"></p>
-      <p id="comparison-instruction" class="help-text">好きな声優をタップしてね。</p>
+      <p id="comparison-instruction" class="help-text">好きな声優をタップしてください。</p>
       <p class="help-text sample-link-note">「♫ ボイスサンプル ↗」を押すと、各所属事務所の公式ボイスサンプルページに移動します。公式サンプルボイスを確認できない場合は、「▶︎ YouTubeで探す」から検索できます。</p>
       <div id="comparison-list"></div>
       <p id="comparison-message" class="help-text"></p>
@@ -687,7 +687,7 @@
           <input id="add-actor-input" type="text" maxlength="80" placeholder="声優名を入力">
           <button class="secondary-button" id="add-actor-button">追加</button>
         </div>
-        <p class="help-text">予選結果にいない声優も追加できるよ。</p>
+        <p class="help-text">予選結果にいない声優も追加できます。</p>
         <ol id="prelim-result-list"></ol>
         <button class="primary-button" id="start-final-button">本戦を始める</button>
       </div>
@@ -697,25 +697,25 @@
 
     <section class="panel" id="result-screen" hidden>
       <h2>好き声9選ソート結果</h2>
-      <p class="help-text">選んだ声優の中から決まったTOP9だよ。</p>
+      <p class="help-text">選んだ声優の中から決まったTOP9です。</p>
       <ol id="result-list" class="result-grid" hidden></ol>
       <div class="result-image-wrap">
         <img id="result-image-preview" class="result-image-preview" alt="好き声9選の順位結果画像">
       </div>
-      <p class="result-image-help">スマホで保存ボタンが使えない場合は、結果画像を長押しして「写真に保存」などを選んでね。</p>
-      <h3>結果をシェアしよう！</h3>
+      <p class="result-image-help">スマホで保存ボタンが使えない場合は、結果画像を長押しして「写真に保存」などを選んでください。</p>
+      <h3>結果をシェアする</h3>
       <label class="help-text" for="player-name">ポストに表示する名前（任意）</label>
       <div class="share-row">
         <input id="player-name" type="text" maxlength="40" placeholder="名前を入力（空欄でもOK）">
         <button class="secondary-button" id="save-result-image-button">結果画像を保存</button>
         <button class="primary-button" id="share-result-button">結果を共有</button>
       </div>
-      <p class="share-note">「結果画像を保存」で画像を保存してね。「結果を共有」では順位と声優名入りの投稿文でXを開くよ。画像も載せたいときは、Xの投稿画面で保存した画像を添付してね。</p>
+      <p class="share-note">「結果画像を保存」で画像を保存してください。「結果を共有」では順位と声優名入りの投稿文でXを開きます。画像も載せたいときは、Xの投稿画面で保存した画像を添付してください。</p>
       <p id="share-message" class="help-text" aria-live="polite"></p>
       <section class="aggregate-box" aria-labelledby="aggregate-title">
         <h3 id="aggregate-title">みんなの好き声集計</h3>
-        <p class="help-text">参加は任意だよ。参加すると、名前は送らず、選んだモードと声優IDの順位（1〜9位）だけを送信します。送信後の個別データ削除はできません。匿名の自己申告なので、正確性を保証するものではありません。</p>
-        <p class="aggregate-notice"><strong>集計への参加は1回だけお願いします。</strong><br>同じ好き声9選を複数回送信せず、このランキングを1回だけ送信してね。名前は送信されません。</p>
+        <p class="help-text">参加は任意です。参加すると、名前は送らず、選んだモードと声優IDの順位（1〜9位）だけを送信します。送信後の個別データ削除はできません。匿名の自己申告なので、正確性を保証するものではありません。</p>
+        <p class="aggregate-notice"><strong>集計への参加は1回だけお願いします。</strong><br>同じ好き声9選を複数回送信せず、このランキングを1回だけ送信してください。名前は送信されません。</p>
         <div class="aggregate-actions">
           <button class="aggregate-primary" id="submit-aggregate-button" type="button">集計に参加する</button>
           <button class="aggregate-secondary" id="view-aggregate-button" type="button">みんなの結果を見る</button>
@@ -883,7 +883,7 @@ function makeActorChoice(actor, selected, onChoose) {
 function resetRun(list) {
   replacementTargetId = null;
   candidates = uniqueActors(list);
-  if (candidates.length < 2) { alert("比較できる声優が2人以上必要だよ。データを確認してね！"); return false; }
+  if (candidates.length < 2) { alert("比較できる声優が2人以上必要です。データを確認してください！"); return false; }
   groups = makeGroups(candidates); groupIndex = 0; groupSelections = []; winners = []; addedActors = [];
   qualifierPool = []; qualifierResults = []; qualifierCounts = new Map(); qualifierAppearances = new Map(); qualifierQuestion = 0; qualifierCurrentGroup = null; qualifierHistory = []; qualifierRedoGroup = null; qualifierAnswerLocked = false;
   finalPool = []; finalResults = []; finalCounts = new Map(); finalCurrentPair = null; finalRedoPair = null;
@@ -905,10 +905,10 @@ function finishPrelimGroup() {
 function renderGroup() {
   stage = "prelim"; const group = groups[groupIndex] || [];
   comparisonList.innerHTML = ""; comparisonList.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
-  document.getElementById("comparison-title").textContent = "予選：好きな声を選ぼう";
+  document.getElementById("comparison-title").textContent = "予選：好きな声を選ぶ";
   document.getElementById("comparison-instruction").classList.remove("candidate-count");
   document.querySelector(".sample-link-note").hidden = false;
-  document.getElementById("comparison-instruction").textContent = "好きな人を選んでね（複数OK）。もう一度押すと解除できるよ。";
+  document.getElementById("comparison-instruction").textContent = "好きな人を選んでください（複数OK）。もう一度押すと解除できます。";
   prelimActions.hidden = false; finalActions.hidden = true; nextButton.hidden = false;
   nextButton.textContent = groupIndex === groups.length - 1 ? "次へ" : "次のグループへ";
   document.getElementById("previous-button").textContent = "戻る";
@@ -1124,15 +1124,15 @@ function renderQualifier() {
   comparisonList.innerHTML = "";
   comparisonList.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
   comparisonList.style.pointerEvents = qualifierAnswerLocked ? "none" : "";
-  document.getElementById("comparison-title").textContent = "予選：16人に絞り込もう";
+  document.getElementById("comparison-title").textContent = "予選：16人に絞り込む";
   document.getElementById("comparison-instruction").classList.remove("candidate-count");
   document.querySelector(".sample-link-note").hidden = false;
-  document.getElementById("comparison-instruction").textContent = "2人のうち、好きな声優を選んでね。選ぶとすぐ次へ進むよ。";
+  document.getElementById("comparison-instruction").textContent = "2人のうち、好きな声優を選んでください。選ぶとすぐ次へ進みます。";
   prelimActions.hidden = true; finalActions.hidden = true;
   document.getElementById("previous-button").textContent = "一つ前の比較へ";
   document.getElementById("previous-button").disabled = qualifierHistory.length === 0;
   comparisonProgress.textContent = `予選・2択比較 ${qualifierQuestion + 1} 回目（候補 ${qualifierPool.length} 人）`;
-  comparisonMessage.textContent = "候補者全体を4回ずつ比較したあと、12〜20位付近で勝利数が近い候補者も追加比較するよ。";
+  comparisonMessage.textContent = "候補者全体を4回ずつ比較したあと、12〜20位付近で勝利数が近い候補者も追加比較します。";
   group.forEach(actor => {
     const b = makeActorChoice(actor, false, () => answerQualifier(actor));
     b.disabled = qualifierAnswerLocked;
@@ -1185,13 +1185,13 @@ function renderPrelimResults() {
   candidateInstruction.classList.toggle("candidate-count-ready", pool.length >= 9);
   document.querySelector(".sample-link-note").hidden = true;
   candidateInstruction.innerHTML = pool.length < 9
-    ? `候補は${pool.length}人。あと${9-pool.length}人以上追加してね。`
+    ? `候補は${pool.length}人。あと${9-pool.length}人以上追加してください。`
     : `本戦候補は<span class="candidate-number">${pool.length}人</span>`;
   comparisonProgress.textContent = "本戦出場候補リスト"; prelimActions.hidden = true; finalActions.hidden = false;
   document.getElementById("previous-button").textContent = "最初の予選へ戻る"; document.getElementById("previous-button").disabled = false;
   const list = document.getElementById("prelim-result-list"); list.innerHTML = "";
   const help = document.createElement("p"); help.className = "candidate-help";
-  help.textContent = pool.length >= 16 ? "候補が16人いるよ。入れ替えたい声優の「入れ替え対象」を選んでから、新しい声優を追加してね。" : "候補が16人未満なら追加できるよ。入れ替えたい場合は、対象を選んでから追加してね。";
+  help.textContent = pool.length >= 16 ? "候補が16人います。入れ替えたい声優の「入れ替え対象」を選んでから、新しい声優を追加してください。" : "候補が16人未満なら追加できます。入れ替えたい場合は、対象を選んでから追加してください。";
   list.appendChild(help);
   pool.forEach(actor => {
     const li = document.createElement("li"); li.className = "candidate-row" + (replacementTargetId === actor.id ? " selected-replacement" : "");
@@ -1209,29 +1209,29 @@ function renderPrelimResults() {
   input.disabled = false; addButton.disabled = false;
   input.title = "追加したい声優名を入力"; addButton.title = "入力した声優を追加、または選択した候補と入れ替え";
   document.getElementById("start-final-button").disabled = pool.length < 9 || pool.length > 16;
-  comparisonMessage.textContent = pool.length > 16 ? "候補が16人を超えているよ。16人以内にしてね。" : "";
+  comparisonMessage.textContent = pool.length > 16 ? "候補が16人を超えています。16人以内にしてください。" : "";
 }
 document.getElementById("add-actor-button").addEventListener("click", () => {
   const input = document.getElementById("add-actor-input"), name = input.value.trim(), pool = uniqueActors([...winners,...addedActors]);
-  if (!name) { comparisonMessage.textContent = "声優名を入力してね。"; return; }
-  if (pool.some(a => a.name.toLocaleLowerCase() === name.toLocaleLowerCase())) { comparisonMessage.textContent = "その声優はすでにリストにいるよ。"; return; }
+  if (!name) { comparisonMessage.textContent = "声優名を入力してください。"; return; }
+  if (pool.some(a => a.name.toLocaleLowerCase() === name.toLocaleLowerCase())) { comparisonMessage.textContent = "その声優はすでにリストにいます。"; return; }
   const known = voiceActors.find(a => a.name.toLocaleLowerCase() === name.toLocaleLowerCase());
   const newActor = known || {id:"manual_"+Date.now()+"_"+Math.random().toString(36).slice(2,8), name};
   if (replacementTargetId) {
     const target = pool.find(a => a.id === replacementTargetId);
-    if (!target) { replacementTargetId = null; comparisonMessage.textContent = "入れ替え対象を選び直してね。"; renderPrelimResults(); return; }
+    if (!target) { replacementTargetId = null; comparisonMessage.textContent = "入れ替え対象を選び直してください。"; renderPrelimResults(); return; }
     winners = winners.filter(a => a.id !== target.id);
     addedActors = addedActors.filter(a => a.id !== target.id);
     addedActors.push(newActor); replacementTargetId = null;
-    input.value = ""; renderPrelimResults(); comparisonMessage.textContent = `${target.name} を ${name} に入れ替えたよ！`; return;
+    input.value = ""; renderPrelimResults(); comparisonMessage.textContent = `${target.name} を ${name} に入れ替えました！`; return;
   }
-  if (pool.length >= 16) { comparisonMessage.textContent = "候補は最大16人だよ。入れ替え対象を選んでから追加してね。"; return; }
-  addedActors.push(newActor); input.value = ""; renderPrelimResults(); comparisonMessage.textContent = `${name} を追加したよ！`;
+  if (pool.length >= 16) { comparisonMessage.textContent = "候補は最大16人です。入れ替え対象を選んでから追加してください。"; return; }
+  addedActors.push(newActor); input.value = ""; renderPrelimResults(); comparisonMessage.textContent = `${name} を追加しました！`;
 });
 document.getElementById("start-final-button").addEventListener("click", () => {
   finalPool = uniqueActors([...winners,...addedActors]);
-  if (finalPool.length < 9) { comparisonMessage.textContent = `本戦は最低9人必要だよ。あと${9-finalPool.length}人追加してね。`; return; }
-  if (finalPool.length > 16) { comparisonMessage.textContent = "本戦候補は16人までにしてね。"; return; }
+  if (finalPool.length < 9) { comparisonMessage.textContent = `本戦は最低9人必要です。あと${9-finalPool.length}人追加してください。`; return; }
+  if (finalPool.length > 16) { comparisonMessage.textContent = "本戦候補は16人までにしてください。"; return; }
   finalResults = []; finalCounts = new Map(finalPool.map(a=>[a.id,0])); finalRedoPair = null; finalHistory = []; finalAnswerLocked = false;
   // 本戦はランダムな順番から二分挿入ソートで全員の順位を組み立てる。
   // 比較結果を使って順位を決めるため、勝率の単純比較や推移関係の早期終了はしない。
@@ -1269,14 +1269,14 @@ function renderFinal() {
   const comparedActor = finalSortOrder[mid];
   finalCurrentPair = [finalCurrentActor, comparedActor];
   comparisonList.innerHTML=""; comparisonList.style.gridTemplateColumns="repeat(2, minmax(0, 1fr))"; comparisonList.style.pointerEvents=finalAnswerLocked ? "none" : "";
-  document.getElementById("comparison-title").textContent="本戦：順位を決めよう";
+  document.getElementById("comparison-title").textContent="本戦：順位を決める";
   document.getElementById("comparison-instruction").classList.remove("candidate-count-ready", "candidate-count");
-  document.getElementById("comparison-instruction").textContent="2人のうち好きな声優を選んでね。選んだ方を基準に順位を組み立てていくよ。";
+  document.getElementById("comparison-instruction").textContent="2人のうち好きな声優を選んでください。選んだ方を基準に順位を組み立てていきます。";
   prelimActions.hidden=true; finalActions.hidden=true;
   document.getElementById("previous-button").textContent="一つ前の比較へ";
   document.getElementById("previous-button").disabled=finalHistory.length===0;
   comparisonProgress.textContent=`本戦・比較 ${finalResults.length+1} 回目（順位決定中 ${finalInsertIndex}/${finalInsertOrder.length} 人目）`;
-  comparisonMessage.textContent="本戦は候補者を順番に比較し、二分挿入で順位を決めるよ。勝率だけで並べず、全員の順位が決まるまで比較を続けるよ。";
+  comparisonMessage.textContent="本戦は候補者を順番に比較し、二分挿入で順位を決めます。勝率だけで並べず、全員の順位が決まるまで比較を続けます。";
   finalCurrentPair.forEach(actor=>{const b=makeActorChoice(actor,false,()=>answerFinal(actor));b.disabled=finalAnswerLocked;comparisonList.appendChild(b);});
 }
 function answerFinal(winner) {
@@ -1300,7 +1300,7 @@ function showFinalResult() {
   const visualOrder = [3,4,5,1,0,2,6,7,8];
   visualOrder.forEach(rankIndex=>{const actor=actors[rankIndex];if(!actor)return;const item=document.createElement("li");item.className=`result-card rank-${rankIndex+1}`;if(rankIndex===0){const crown=document.createElement("span");crown.className="result-crown";crown.textContent="♛";item.appendChild(crown);}const rank=document.createElement("span");rank.className="result-rank";rank.textContent=`${rankIndex+1}位`;const name=document.createElement("span");name.className="result-name";name.textContent=actor.name;const credit=document.createElement("span");credit.className="result-credit";credit.textContent=actorCreditLabel(actor);item.append(rank,name,credit);resultList.appendChild(item);});
   document.getElementById("result-image-preview").src = drawResultImage().toDataURL("image/png");
-  document.querySelector("#result-screen .help-text").textContent=`本戦で行った比較結果から順位を組み立てたよ。実際の比較は${finalResults.length}回。`;
+  document.querySelector("#result-screen .help-text").textContent=`本戦で行った比較結果から順位を組み立てました。実際の比較は${finalResults.length}回。`;
   stage="result";showScreen("result");
 }
 let activeWorkRow = "すべて";
@@ -1327,7 +1327,7 @@ function renderWorks() {
   workList.innerHTML="";
   const visibleWorks=works.filter(work=>activeWorkRow==="すべて"||workRowFor(work)===activeWorkRow);
   visibleWorks.forEach(work=>{const label=document.createElement("label");label.className="work-item";const cb=document.createElement("input");cb.type="checkbox";cb.value=work.id;cb.checked=selectedWorkIds.has(work.id);cb.addEventListener("change",()=>{if(cb.checked)selectedWorkIds.add(work.id);else selectedWorkIds.delete(work.id);});const name=document.createElement("span");name.textContent=work.name;label.append(cb,name);workList.appendChild(label);});
-  workMessage.textContent=works.length?`${visibleWorks.length}作品を表示中`:"公開用の作品データがまだ登録されていないよ。";
+  workMessage.textContent=works.length?`${visibleWorks.length}作品を表示中`:"公開用の作品データがまだ登録されていません。";
 }
 document.getElementById("begin-button").addEventListener("click", () => showScreen("mode"));
 document.getElementById("mode-back-button").addEventListener("click", () => showScreen("home"));
@@ -1380,7 +1380,7 @@ function renderQuickActors() {
     const label = document.createElement("label"); label.className = "quick-actor-option";
     const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = quickSelectedIds.has(actor.id);
     cb.addEventListener("change", () => {
-      if (cb.checked && quickSelectedIds.size >= 16) { cb.checked = false; document.getElementById("quick-message").textContent = "選べるのは16人までだよ。"; return; }
+      if (cb.checked && quickSelectedIds.size >= 16) { cb.checked = false; document.getElementById("quick-message").textContent = "選べるのは16人までです。"; return; }
       if (cb.checked) quickSelectedIds.add(actor.id); else quickSelectedIds.delete(actor.id);
       updateQuickCount();
     });
@@ -1418,20 +1418,20 @@ document.getElementById("quick-add-actor-button").addEventListener("click", () =
   const input = document.getElementById("quick-add-actor-input");
   const name = input.value.trim();
   const message = document.getElementById("quick-message");
-  if (!name) { message.textContent = "追加したい声優名を入力してね。"; return; }
+  if (!name) { message.textContent = "追加したい声優名を入力してください。"; return; }
   const allQuickActors = [...voiceActors.filter(a => a.showInList === "T"), ...quickManualActors.values()];
   const existing = allQuickActors.find(a => a.name.toLocaleLowerCase() === name.toLocaleLowerCase());
   if (existing) {
-    if (quickSelectedIds.has(existing.id)) { message.textContent = `${existing.name} はすでに候補に入っているよ。`; return; }
-    if (quickSelectedIds.size >= 16) { message.textContent = "候補は最大16人だよ。先に誰かのチェックを外してね。"; return; }
+    if (quickSelectedIds.has(existing.id)) { message.textContent = `${existing.name} はすでに候補に入っています。`; return; }
+    if (quickSelectedIds.size >= 16) { message.textContent = "候補は最大16人です。先に誰かのチェックを外してください。"; return; }
     quickSelectedIds.add(existing.id);
-    message.textContent = `${existing.name} を候補に追加したよ！`;
+    message.textContent = `${existing.name} を候補に追加しました！`;
   } else {
-    if (quickSelectedIds.size >= 16) { message.textContent = "候補は最大16人だよ。先に誰かのチェックを外してね。"; return; }
+    if (quickSelectedIds.size >= 16) { message.textContent = "候補は最大16人です。先に誰かのチェックを外してください。"; return; }
     const actor = { id: "quick_manual_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8), name, showInList: "T", sampleVoiceUrl: "" };
     quickManualActors.set(actor.id, actor);
     quickSelectedIds.add(actor.id);
-    message.textContent = `${name} を候補に追加したよ！`;
+    message.textContent = `${name} を候補に追加しました！`;
   }
   input.value = "";
   renderQuickActors();
@@ -1442,7 +1442,7 @@ document.getElementById("quick-add-actor-input").addEventListener("keydown", eve
 document.getElementById("quick-start-button").addEventListener("click", () => {
   const n = quickSelectedIds.size;
   const message = document.getElementById("quick-message");
-  if (n < 9 || n > 16) { message.textContent = "候補を9〜16人そろえてね。"; return; }
+  if (n < 9 || n > 16) { message.textContent = "候補を9〜16人そろえてください。"; return; }
   currentMode = "quick"; selectedWorkIds = new Set();
   const allQuickActors = [...voiceActors.filter(a => a.showInList === "T"), ...quickManualActors.values()];
   const chosen = allQuickActors.filter(a => quickSelectedIds.has(a.id));
@@ -1450,7 +1450,7 @@ document.getElementById("quick-start-button").addEventListener("click", () => {
 });
 function startQuickFinal(list) {
   const pool = uniqueActors(list);
-  if (pool.length < 9 || pool.length > 16) { document.getElementById("quick-message").textContent = "候補を9〜16人そろえてね。"; return; }
+  if (pool.length < 9 || pool.length > 16) { document.getElementById("quick-message").textContent = "候補を9〜16人そろえてください。"; return; }
   replacementTargetId = null;
   candidates = pool; groups = []; groupIndex = 0; groupSelections = []; winners = []; addedActors = [];
   qualifierPool = []; qualifierResults = []; qualifierCounts = new Map(); qualifierAppearances = new Map(); qualifierQuestion = 0; qualifierCurrentGroup = null; qualifierHistory = []; qualifierRedoGroup = null; qualifierAnswerLocked = false;
@@ -1461,10 +1461,10 @@ function startQuickFinal(list) {
 }
 document.getElementById("start-work-button").addEventListener("click",()=>{
   const selected=new Set(selectedWorkIds);
-  if(!selected.size){workMessage.textContent="作品を1つ以上選んでね。";return;}
+  if(!selected.size){workMessage.textContent="作品を1つ以上選んでください。";return;}
   selectedWorkIds = selected; currentMode = "work";
   const actorIds=new Set(characters.filter(c=>selected.has(c.workId)).map(c=>c.voiceActorId));const actors=voiceActors.filter(a=>actorIds.has(a.id));
-  if(actors.length<2){workMessage.textContent="選んだ作品の出演声優データが足りないよ。characters のデータを確認してね。";return;}resetRun(actors);
+  if(actors.length<2){workMessage.textContent="選んだ作品の出演声優データが足りません。characters のデータを確認してください。";return;}resetRun(actors);
 });
 nextButton.addEventListener("click",()=>{if(stage==="prelim")finishPrelimGroup();});
 document.getElementById("previous-button").addEventListener("click",()=>{
@@ -1559,7 +1559,7 @@ ${baseUrl}`;
 }
 function openXShare(text) {
   const baseUrl=getShareBaseUrl();
-  if (!/^https?:\/\//i.test(baseUrl)) { document.getElementById("share-message").textContent="X共有はサイト公開後に使えるよ。いまは投稿文をコピーして確認できるよ。"; GenUICopyFallback(text); return false; }
+  if (!/^https?:\/\//i.test(baseUrl)) { document.getElementById("share-message").textContent="X共有はサイト公開後に使えます。いまは投稿文をコピーして確認できます。"; GenUICopyFallback(text); return false; }
   window.open("https://x.com/intent/tweet?"+new URLSearchParams({text}).toString(),"_blank","noopener,noreferrer");
   return true;
 }
@@ -1573,7 +1573,7 @@ document.getElementById("save-result-image-button").addEventListener("click", as
     // スマホの対応ブラウザでは共有シートを開き、写真への保存などを選べるようにする。
     if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
       await navigator.share({ files: [file], title: "好き声9選" });
-      message.textContent = "共有メニューを開いたよ！「画像を保存」や「写真に保存」などを選んでね。";
+      message.textContent = "共有メニューを開きました！「画像を保存」や「写真に保存」などを選んでください。";
       return;
     }
     // それ以外のブラウザでは通常のダウンロードを試す。
@@ -1581,10 +1581,10 @@ document.getElementById("save-result-image-button").addEventListener("click", as
     const link = document.createElement("a"); link.download = "好き声9選.png"; link.href = url;
     document.body.appendChild(link); link.click(); link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 10000);
-    message.textContent = "保存が始まらない場合は、上の結果画像を長押しして保存してね。";
+    message.textContent = "保存が始まらない場合は、上の結果画像を長押しして保存してください。";
   } catch (error) {
     if (error && error.name === "AbortError") {
-      message.textContent = "保存・共有をキャンセルしたよ。必要なら結果画像を長押しして保存してね。";
+      message.textContent = "保存・共有をキャンセルしました。必要なら結果画像を長押しして保存してください。";
       return;
     }
     // 失敗時は画像を新しいタブで開く方法を案内する。
@@ -1592,16 +1592,16 @@ document.getElementById("save-result-image-button").addEventListener("click", as
       const blob = await new Promise((resolve, reject) => canvas.toBlob(value => value ? resolve(value) : reject(new Error("画像を作成できませんでした。")), "image/png"));
       const url = URL.createObjectURL(blob);
       const opened = window.open(url, "_blank", "noopener,noreferrer");
-      message.textContent = opened ? "画像を開いたよ。画像を長押しして保存してね。" : "保存できない場合は、上の結果画像を長押しして保存してね。";
+      message.textContent = opened ? "画像を開きました。画像を長押しして保存してください。" : "保存できない場合は、上の結果画像を長押しして保存してください。";
       setTimeout(() => URL.revokeObjectURL(url), 60000);
     } catch (_) {
-      message.textContent = "保存できなかった場合は、上の結果画像を長押しして保存してね。";
+      message.textContent = "保存できなかった場合は、上の結果画像を長押しして保存してください。";
     }
   }
 });
 document.getElementById("share-result-button").addEventListener("click",()=>{
   const opened=openXShare(shareText(false));
-  if(opened) document.getElementById("share-message").textContent="順位と声優名入りの投稿文でXを開いたよ！ 画像も載せたいときは保存した画像を添付してね。";
+  if(opened) document.getElementById("share-message").textContent="順位と声優名入りの投稿文でXを開きました！ 画像も載せたいときは保存した画像を添付してください。";
 });
 document.getElementById("result-back-button").addEventListener("click",()=>showScreen("home"));
 
@@ -1648,12 +1648,12 @@ document.getElementById("submit-aggregate-button").addEventListener("click", asy
     const after = await loadAggregateStats();
     if (Number(after.submission_count || 0) > Number(before.submission_count || 0)) {
       localStorage.setItem(submittedKey, "1");
-      message.textContent = "集計への送信を確認できたよ！参加ありがとう♡";
+      message.textContent = "集計への送信を確認できました！参加ありがとう♡";
     } else {
-      message.textContent = "送信リクエストは出したけれど、保存を確認できなかったよ。少し待ってから集計件数を確認してね。";
+      message.textContent = "送信リクエストは出したけれど、保存を確認できませんでした。少し待ってから集計件数を確認してください。";
     }
   } catch (error) {
-    message.textContent = error.message || "集計に送信できませんでした。Apps ScriptのURLや公開設定を確認してね。";
+    message.textContent = error.message || "集計に送信できませんでした。Apps ScriptのURLや公開設定を確認してください。";
   } finally {
     button.disabled = false;
   }
@@ -1690,7 +1690,7 @@ async function showAggregateResults(box, message, button) {
     const data = await loadAggregateStats();
     const total = Number(data.submission_count || 0);
     let html = `<h4 class="aggregate-section-heading">全体の好き声ランキング</h4><p>集計参加：${total}件</p>`;
-    if (!total) html += `<p>まだ集計データがないよ。最初の参加者になってね！</p>`;
+    if (!total) html += `<p>まだ集計データがありません。最初の参加者になってね！</p>`;
     else {
       const first = (data.first_place || []).slice(0, 30);
       // 同じ1位回数の声優には同じ順位を表示する（競技順位方式：1, 1, 3）。
@@ -1718,7 +1718,7 @@ async function showAggregateResults(box, message, button) {
     }
     box.innerHTML = html;
     box.hidden = false;
-    message.textContent = "集計を表示したよ。";
+    message.textContent = "集計を表示しました。";
   } catch (error) {
     message.textContent = error.message || "集計を読み込めませんでした。";
   } finally {
