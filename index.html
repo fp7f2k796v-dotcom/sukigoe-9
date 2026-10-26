@@ -475,17 +475,16 @@
     .aggregate-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
     .aggregate-table th, .aggregate-table td { padding: 8px; border-bottom: 1px solid #f0dce6; text-align: left; }
     .aggregate-table th { color: #a34f7a; }
-    /* 全体ランキングの上位3位を目立たせる */
-    .aggregate-table .top-rank-1 td { background: #fff0c2; font-weight: 800; color: #80591b; }
-    .aggregate-table .top-rank-2 td { background: #e4f5ec; font-weight: 750; color: #367d61; }
-    .aggregate-table .top-rank-3 td { background: #e5f1ff; font-weight: 750; color: #3975a8; }
-    .aggregate-table .top-rank-1 td:first-child,
-    .aggregate-table .top-rank-2 td:first-child,
-    .aggregate-table .top-rank-3 td:first-child { font-size: 1.08em; white-space: nowrap; }
-    .aggregate-table .top-rank-1 td:first-child::before { content: "👑 "; }
-    .aggregate-table .top-rank-2 td:first-child::before { content: "🥈 "; }
-    .aggregate-table .top-rank-3 td:first-child::before { content: "🥉 "; }
-    .aggregate-winner-name { color: #a34f7a; font-size: 1.16em; font-weight: 800; }
+    /* 全体ランキングは順位の数字だけを強調し、名前と回数は通常表示にする */
+    .aggregate-table .top-rank-1 td:first-child { color: #a34f7a; font-weight: 800; }
+    .aggregate-table .top-rank-2 td:first-child { color: #367d61; font-weight: 800; }
+    .aggregate-table .top-rank-3 td:first-child { color: #3975a8; font-weight: 800; }
+    /* 全体ランキングの上位3人は名前だけ少し太くする（色は通常のまま） */
+    .aggregate-table .top-rank-1 td:nth-child(2),
+    .aggregate-table .top-rank-2 td:nth-child(2),
+    .aggregate-table .top-rank-3 td:nth-child(2) { font-weight: 700; }
+    /* 「○○が1位のとき」の見出しはピンクの太字で強調 */
+    #aggregate-results h5, #aggregate-results-home h5 { color: #a85f88; font-size: 1.12em; font-weight: 800; }
   </style>
   <!-- OGP：SNS共有用の情報 -->
 <meta property="og:type" content="website">
@@ -1627,7 +1626,7 @@ async function showAggregateResults(box, message, button) {
         const group = (data.companions || []).filter(r => r.first_actor_id === id && r.other_actor_id !== id)
           .sort((a, b) => Number(b.count) - Number(a.count)).slice(0, 8);
         if (!group.length) return "";
-        return `<h5><span class="aggregate-winner-name">${escapeHtml(actorNameById.get(id) || id)}</span> が1位のとき</h5><table class="aggregate-table"><thead><tr><th>声優</th><th>人数</th><th>割合</th></tr></thead><tbody>` +
+        return `<h5>${escapeHtml(actorNameById.get(id) || id)} が1位のとき</h5><table class="aggregate-table"><thead><tr><th>声優</th><th>人数</th><th>割合</th></tr></thead><tbody>` +
           group.map(r => `<tr><td>${escapeHtml(actorNameById.get(r.other_actor_id) || r.other_actor_id)}</td><td>${Number(r.count)}</td><td>${Number(r.percent).toFixed(1)}%</td></tr>`).join("") +
           `</tbody></table>`;
       }).join("");
