@@ -476,6 +476,8 @@
     .aggregate-table th, .aggregate-table td { padding: 8px; border-bottom: 1px solid #f0dce6; text-align: left; }
     .aggregate-table th { color: #a34f7a; }
     /* 全体ランキングと「1位別」セクションの間に余白を設け、見出しを明確にする */
+    #aggregate-results .aggregate-section-heading,
+    #aggregate-results-home .aggregate-section-heading,
     #aggregate-results .aggregate-table + h4,
     #aggregate-results-home .aggregate-table + h4 {
       margin-top: 38px;
@@ -1618,7 +1620,7 @@ async function showAggregateResults(box, message, button) {
   try {
     const data = await loadAggregateStats();
     const total = Number(data.submission_count || 0);
-    let html = `<h4>全体の好き声ランキング</h4><p>集計参加：${total}件</p>`;
+    let html = `<h4 class="aggregate-section-heading">全体の好き声ランキング</h4><p>集計参加：${total}件</p>`;
     if (!total) html += `<p>まだ集計データがないよ。最初の参加者になってね！</p>`;
     else {
       const first = (data.first_place || []).slice(0, 30);
