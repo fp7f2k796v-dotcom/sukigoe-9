@@ -528,8 +528,34 @@
     /* v13 refinements requested after mobile review */
     .welcome-panel p, .aggregate-home-card p { font-size: 12px; }
     #start-final-button { margin-bottom: 14px; }
+    /* 本戦候補の人数表示は、説明文とは独立して以前のデザインを維持 */
     #comparison-instruction { font-size: 13px; font-weight: 400; line-height: 1.7; }
-    #comparison-instruction.candidate-count-ready { font-size: 13px; font-weight: 400; line-height: 1.7; }
+    #comparison-instruction.candidate-count-ready {
+      margin: 14px 0 18px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: #766474;
+      font-size: clamp(19px, 4.5vw, 24px);
+      line-height: 1.5;
+      font-weight: 700;
+    }
+    #comparison-instruction.candidate-count-ready .candidate-number {
+      color: #a85f88;
+      font-weight: 800;
+    }
+    #comparison-instruction.candidate-count {
+      margin: 14px 0 18px;
+      padding: 14px 16px;
+      border: 2px solid #e5bfd4;
+      border-radius: 14px;
+      background: #fff0f7;
+      color: #985075;
+      font-size: clamp(19px, 4.5vw, 24px);
+      line-height: 1.5;
+      font-weight: 800;
+    }
     .aggregate-screen-panel { background: linear-gradient(145deg, #fff 0%, #fffafd 100%); border-color: #edcddd; }
     #aggregate-screen > h2 { color: #a85f88; }
     #aggregate-screen > .help-text { color: #988693; }
