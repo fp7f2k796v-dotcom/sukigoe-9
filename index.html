@@ -127,6 +127,7 @@
     .quick-selected-panel ol { margin:0; padding-left:24px; line-height:1.8; }
     .quick-selected-empty { margin:0; color:#988693; font-size:13px; }
     #comparison-instruction.candidate-count { margin:14px 0 18px; padding:14px 16px; border:2px solid #e5bfd4; border-radius:14px; background:#fff0f7; color:#985075; font-size:clamp(19px, 4.5vw, 24px); line-height:1.5; font-weight:800; }
+    #start-final-button { padding:16px 24px; min-height:58px; font-size:16px; font-weight:700; }
     .quick-actor-option small { display:block; margin-top:3px; color:#927b8c; font-size:10px; line-height:1.35; }
     .actor-avatar { flex: 0 0 46px; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border-radius: 15px; font-size: 23px; font-weight: bold; box-shadow: inset 0 0 0 1px #ffffffaa; transition: transform .15s ease; }
     .choice-button:hover .actor-avatar { transform: rotate(-4deg) scale(1.04); }
@@ -1116,9 +1117,9 @@ function renderPrelimResults() {
   const pool = uniqueActors([...winners, ...addedActors]);
   document.getElementById("comparison-title").textContent = "本戦出場候補";
   const candidateInstruction = document.getElementById("comparison-instruction");
-  candidateInstruction.classList.add("candidate-count");
+  candidateInstruction.classList.toggle("candidate-count", pool.length < 9);
   document.querySelector(".sample-link-note").hidden = true;
-  candidateInstruction.textContent = pool.length < 9 ? `候補は${pool.length}人。あと${9-pool.length}人以上追加してね。` : `本戦候補は ${pool.length} 人。順位はまだつけず、名前だけ確認できるよ。`;
+  candidateInstruction.textContent = pool.length < 9 ? `候補は${pool.length}人。あと${9-pool.length}人以上追加してね。` : `本戦候補は${pool.length}人`;
   comparisonProgress.textContent = "本戦出場候補リスト"; prelimActions.hidden = true; finalActions.hidden = false;
   document.getElementById("previous-button").textContent = "最初の予選へ戻る"; document.getElementById("previous-button").disabled = false;
   const list = document.getElementById("prelim-result-list"); list.innerHTML = "";
