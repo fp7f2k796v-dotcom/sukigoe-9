@@ -483,8 +483,9 @@
     .aggregate-table .top-rank-1 td:nth-child(2),
     .aggregate-table .top-rank-2 td:nth-child(2),
     .aggregate-table .top-rank-3 td:nth-child(2) { font-weight: 700; }
-    /* 「○○ が1位のとき」は黒文字にし、少し控えめな大きさに */
+    /* 「○○が1位のとき」は見出し全体を黒、声優名だけピンク */
     #aggregate-results h5, #aggregate-results-home h5 { color: #514550; font-size: 1.02em; font-weight: 700; }
+    #aggregate-results h5 .first-place-actor, #aggregate-results-home h5 .first-place-actor { color: #a85f88; }
   </style>
   <!-- OGP：SNS共有用の情報 -->
 <meta property="og:type" content="website">
@@ -1626,7 +1627,7 @@ async function showAggregateResults(box, message, button) {
         const group = (data.companions || []).filter(r => r.first_actor_id === id && r.other_actor_id !== id)
           .sort((a, b) => Number(b.count) - Number(a.count)).slice(0, 8);
         if (!group.length) return "";
-        return `<h5>${escapeHtml(actorNameById.get(id) || id)} が1位のとき</h5><table class="aggregate-table"><thead><tr><th>声優</th><th>人数</th><th>割合</th></tr></thead><tbody>` +
+        return `<h5><span class="first-place-actor">${escapeHtml(actorNameById.get(id) || id)}</span> が1位のとき</h5><table class="aggregate-table"><thead><tr><th>声優</th><th>人数</th><th>割合</th></tr></thead><tbody>` +
           group.map(r => `<tr><td>${escapeHtml(actorNameById.get(r.other_actor_id) || r.other_actor_id)}</td><td>${Number(r.count)}</td><td>${Number(r.percent).toFixed(1)}%</td></tr>`).join("") +
           `</tbody></table>`;
       }).join("");
