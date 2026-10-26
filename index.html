@@ -96,7 +96,29 @@
     .welcome-panel { position: relative; text-align: center; padding: 38px 25px; overflow: hidden; background: linear-gradient(145deg, #fff 0%, #fff8fc 65%, #f8efff 100%); }
     .welcome-panel::before { content: "✧  ♡  ✧"; display: block; margin: 0 auto 12px; color: #dba2c0; letter-spacing: 12px; font-size: 18px; }
     .welcome-panel h2 { margin: 0 0 12px; color: #9d527d; font-size: clamp(22px, 4vw, 28px); }
-    .welcome-panel p { line-height: 1.8; color: #867682; margin: 0 0 22px; }
+    .welcome-panel p { line-height: 1.8; color: #867682; margin: 0 0 22px; font-size: 12px; }
+    .welcome-panel #begin-button { margin-top: 24px; }
+    .primary-button { min-height: 58px; padding: 16px 24px; font-size: 16px; font-weight: 700; }
+    .primary-button + .back-button { margin-top: 12px; }
+    .mode-button { border-width: 2px; }
+    #mode-back-button { margin-top: 18px; }
+    #comparison-instruction.candidate-count-ready { margin:14px 0 18px; padding:0; border:0; border-radius:0; background:transparent; color:#766474; font-size:clamp(19px,4.5vw,24px); line-height:1.5; font-weight:700; }
+    #comparison-instruction .candidate-number { color:#a85f88; font-weight:800; }
+    #start-final-button { padding:16px 24px; min-height:58px; font-size:16px; font-weight:700; }
+    .aggregate-screen-panel { background:linear-gradient(145deg,#fff 0%,#faf9ff 100%); border-color:#deddf7; }
+    #aggregate-screen > h2 { color:#6865ad; }
+    #aggregate-screen > .help-text { color:#817e98; }
+    #aggregate-screen .aggregate-actions { margin-bottom:18px; }
+    #aggregate-screen .aggregate-primary { background:#7774c7; border-color:#7774c7; }
+    #aggregate-screen .aggregate-primary:hover { background:#625fb0; }
+    #aggregate-screen .aggregate-secondary { border-color:#b8b6ed; color:#6865ad; }
+    #aggregate-home-create-button { margin-top:20px; min-height:58px; border:2px solid #9290e2; border-radius:14px; background:#f4f3ff; color:#6865ad; font-size:16px; font-weight:800; }
+    #aggregate-home-back-button { margin-top:12px; }
+    #aggregate-screen .aggregate-table th { color:#6865ad; }
+    #aggregate-screen .aggregate-table th, #aggregate-screen .aggregate-table td { border-bottom-color:#e6e4f7; }
+    #aggregate-screen .aggregate-section-heading, #aggregate-screen .aggregate-table + h4 { border-left-color:#8582d5; background:#f2f1ff; }
+    #aggregate-screen h5 .first-place-actor { color:#a85f88; font-weight:800; }
+    #aggregate-screen h5 .first-place-suffix { color:#514550; font-size:.92em; font-weight:500; }
     .mode-heading { margin-bottom: 6px; }
     .mode-intro { margin-top: 0; color: #988693; font-size: 13px; }
     .mode-button { display: block; position: relative; padding: 15px 16px; padding-right: 16px; }
@@ -461,10 +483,9 @@
     .aggregate-primary:hover { background: #914a73; }
     .aggregate-secondary { background: #fff; color: #925273; border: 2px solid #dba7c4; }
     .aggregate-notice { padding: 11px 13px; border-radius: 10px; background: #fff0f7; color: #87556f; font-size: 13px; line-height: 1.7; margin: 10px 0; }
-    .welcome-panel #begin-button { display: block; width: min(100%, 420px); min-height: 76px; margin: 24px auto 0; padding: 20px 28px; border: 0; border-radius: 18px; background: linear-gradient(135deg, #bd729e, #9f5b86); color: #fff; box-shadow: 0 8px 0 #e8c3d8, 0 14px 24px #a85f8830; font-size: clamp(23px, 5vw, 30px); font-weight: 800; letter-spacing: .08em; }
-    .welcome-panel #begin-button::before { content: "♡  "; font-size: 1em; }
-    .welcome-panel #begin-button::after { content: "  ›"; font-size: 1.15em; }
-    .welcome-panel #begin-button:hover { background: linear-gradient(135deg, #c780aa, #a85f88); transform: translateY(-1px); }
+    .welcome-panel #begin-button { display: block; width: min(100%, 300px); min-height: 58px; margin: 22px auto 0; padding: 14px 22px; border: 1px solid #b8799e; border-radius: 14px; background: linear-gradient(135deg, #bd729e, #a7658d); color: #fff; box-shadow: 0 3px 0 #e8c3d8, 0 6px 12px #a85f8818; font-size: clamp(18px, 4vw, 21px); font-weight: 700; letter-spacing: .07em; }
+    .welcome-panel #begin-button::before, .welcome-panel #begin-button::after { content: none; }
+    .welcome-panel #begin-button:hover { background: linear-gradient(135deg, #c780aa, #a85f88); transform: translateY(-1px); box-shadow: 0 4px 0 #e8c3d8, 0 7px 14px #a85f8820; }
     .aggregate-home-card { margin-top: 30px; padding: 22px 20px; border: 2px solid #d8d8fb; border-radius: 20px; background: linear-gradient(145deg, #f9f9ff, #f0f0ff 75%, #f7f5ff); text-align: center; }
     .aggregate-home-card h3 { margin: 0 0 8px; color: #6865ad; }
     .aggregate-home-card p { color: #817e98; font-size: 13px; line-height: 1.7; margin: 0 0 18px; }
@@ -501,7 +522,8 @@
     .aggregate-table .top-rank-3 td:nth-child(2) { font-weight: 700; }
     /* 「○○が1位のとき」は見出し全体を黒、声優名だけピンク */
     #aggregate-results h5, #aggregate-results-home h5 { color: #514550; font-size: 1.02em; font-weight: 700; }
-    #aggregate-results h5 .first-place-actor, #aggregate-results-home h5 .first-place-actor { color: #a85f88; }
+    #aggregate-results h5 .first-place-actor, #aggregate-results-home h5 .first-place-actor { color: #a85f88; font-weight: 800; }
+    #aggregate-results h5 .first-place-suffix, #aggregate-results-home h5 .first-place-suffix { color: #514550; font-size: .92em; font-weight: 500; }
   </style>
   <!-- OGP：SNS共有用の情報 -->
 <meta property="og:type" content="website">
@@ -520,30 +542,30 @@
   <header>
     <div class="subtitle">MY FAVORITE VOICE ACTOR</div>
     <h1>男性声優好き声9選</h1>
-    <p>あなたの「好き！」が詰まった9人を見つけよう。</p>
+
   </header>
 
   <main>
     <section class="panel welcome-panel" id="home-screen">
-      <h2>あなたの好き声、見つけよう♡</h2>
-      <p>気になる声優を選んで比べるだけ。<br>あなただけのTOP9を作ろう！</p>
-      <button class="primary-button" id="begin-button">スタート</button>
+      <h2>あなたの好き声を見つけよう</h2>
+      <p>気になる声を聴き比べて、あなただけのTOP9を作ろう♡</p>
+      <button class="primary-button" id="begin-button">START</button>
       <section class="aggregate-home-card" aria-labelledby="home-aggregate-title">
-        <h3 id="home-aggregate-title">みんなの好き声ランキング</h3>
-        <p>好き声9選を作らなくても、みんなの1位や声優の組み合わせを見られるよ！</p>
-        <button class="primary-button" id="home-aggregate-button" type="button" style="width:100%;min-height:54px;font-size:16px;font-weight:bold;">みんなの集計を見る</button>
+        <h3 id="home-aggregate-title">みんなの好き声集計</h3>
+        <p>みんなが1位に選んだ声優や、一緒に選ばれやすい声優をチェック！</p>
+        <button class="primary-button" id="home-aggregate-button" type="button">ランキングを見る</button>
       </section>
     </section>
 
-    <section class="panel" id="aggregate-screen" hidden>
+    <section class="panel aggregate-screen-panel" id="aggregate-screen" hidden>
       <h2>みんなの好き声集計</h2>
-      <p class="help-text">みんなの好き声9選から、1位に選ばれた声優や、一緒に選ばれやすい声優を見てみよう！</p>
+      <p class="help-text">みんなが1位に選んだ声優や、一緒に選ばれやすい声優をチェック！</p>
       <div class="aggregate-actions">
-        <button class="primary-button" id="view-aggregate-home-button" type="button">最新の集計を読み込む</button>
-        <button class="secondary-button" id="aggregate-home-create-button" type="button">自分も好き声9選を作る</button>
+        <button class="primary-button aggregate-primary" id="view-aggregate-home-button" type="button">ランキングを見る</button>
       </div>
       <p id="aggregate-home-message" class="help-text" aria-live="polite"></p>
       <div id="aggregate-results-home" hidden></div>
+      <button class="primary-button" id="aggregate-home-create-button" type="button">自分も好き声9選を作る</button>
       <button class="back-button" id="aggregate-home-back-button" type="button">トップへ戻る</button>
     </section>
 
@@ -1118,8 +1140,11 @@ function renderPrelimResults() {
   document.getElementById("comparison-title").textContent = "本戦出場候補";
   const candidateInstruction = document.getElementById("comparison-instruction");
   candidateInstruction.classList.toggle("candidate-count", pool.length < 9);
+  candidateInstruction.classList.toggle("candidate-count-ready", pool.length >= 9);
   document.querySelector(".sample-link-note").hidden = true;
-  candidateInstruction.textContent = pool.length < 9 ? `候補は${pool.length}人。あと${9-pool.length}人以上追加してね。` : `本戦候補は${pool.length}人`;
+  candidateInstruction.innerHTML = pool.length < 9
+    ? `候補は${pool.length}人。あと${9-pool.length}人以上追加してね。`
+    : `本戦候補は<span class="candidate-number">${pool.length}人</span>`;
   comparisonProgress.textContent = "本戦出場候補リスト"; prelimActions.hidden = true; finalActions.hidden = false;
   document.getElementById("previous-button").textContent = "最初の予選へ戻る"; document.getElementById("previous-button").disabled = false;
   const list = document.getElementById("prelim-result-list"); list.innerHTML = "";
@@ -1643,7 +1668,7 @@ async function showAggregateResults(box, message, button) {
         const group = (data.companions || []).filter(r => r.first_actor_id === id && r.other_actor_id !== id)
           .sort((a, b) => Number(b.count) - Number(a.count)).slice(0, 8);
         if (!group.length) return "";
-        return `<h5><span class="first-place-actor">${escapeHtml(actorNameById.get(id) || id)}</span> が1位のとき</h5><table class="aggregate-table"><thead><tr><th>声優</th><th>人数</th><th>割合</th></tr></thead><tbody>` +
+        return `<h5><span class="first-place-actor">${escapeHtml(actorNameById.get(id) || id)}</span><span class="first-place-suffix"> が1位のとき</span></h5><table class="aggregate-table"><thead><tr><th>声優</th><th>人数</th><th>割合</th></tr></thead><tbody>` +
           group.map(r => `<tr><td>${escapeHtml(actorNameById.get(r.other_actor_id) || r.other_actor_id)}</td><td>${Number(r.count)}</td><td>${Number(r.percent).toFixed(1)}%</td></tr>`).join("") +
           `</tbody></table>`;
       }).join("");
