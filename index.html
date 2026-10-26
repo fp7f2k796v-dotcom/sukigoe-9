@@ -524,7 +524,23 @@
     #aggregate-results h5, #aggregate-results-home h5 { color: #514550; font-size: 1.02em; font-weight: 700; }
     #aggregate-results h5 .first-place-actor, #aggregate-results-home h5 .first-place-actor { color: #a85f88; font-weight: 800; }
     #aggregate-results h5 .first-place-suffix, #aggregate-results-home h5 .first-place-suffix { color: #514550; font-size: .92em; font-weight: 500; }
-  </style>
+  
+    /* v13 refinements requested after mobile review */
+    .welcome-panel p, .aggregate-home-card p { font-size: 12px; }
+    #start-final-button { margin-bottom: 14px; }
+    #comparison-instruction { font-size: 13px; font-weight: 400; line-height: 1.7; }
+    #comparison-instruction.candidate-count-ready { font-size: 13px; font-weight: 400; line-height: 1.7; }
+    .aggregate-screen-panel { background: linear-gradient(145deg, #fff 0%, #fffafd 100%); border-color: #edcddd; }
+    #aggregate-screen > h2 { color: #a85f88; }
+    #aggregate-screen > .help-text { color: #988693; }
+    #aggregate-screen .aggregate-primary { background: #a85f88; border-color: #a85f88; }
+    #aggregate-screen .aggregate-primary:hover { background: #914a73; }
+    #aggregate-screen .aggregate-secondary { border-color: #dba7c4; color: #925273; }
+    #aggregate-home-create-button { border-color: #dba7c4; background: #fff0f7; color: #925273; }
+    #aggregate-screen .aggregate-table th { color: #a34f7a; }
+    #aggregate-screen .aggregate-table th, #aggregate-screen .aggregate-table td { border-bottom-color: #f0dce6; }
+    #aggregate-screen .aggregate-section-heading, #aggregate-screen .aggregate-table + h4 { border-left-color: #c4779f; background: #fff0f7; }
+</style>
   <!-- OGP：SNS共有用の情報 -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="男性声優好き声9選">
@@ -1228,6 +1244,7 @@ function renderFinal() {
   finalCurrentPair = [finalCurrentActor, comparedActor];
   comparisonList.innerHTML=""; comparisonList.style.gridTemplateColumns="repeat(2, minmax(0, 1fr))"; comparisonList.style.pointerEvents=finalAnswerLocked ? "none" : "";
   document.getElementById("comparison-title").textContent="本戦：順位を決めよう";
+  document.getElementById("comparison-instruction").classList.remove("candidate-count-ready", "candidate-count");
   document.getElementById("comparison-instruction").textContent="2人のうち好きな声優を選んでね。選んだ方を基準に順位を組み立てていくよ。";
   prelimActions.hidden=true; finalActions.hidden=true;
   document.getElementById("previous-button").textContent="一つ前の比較へ";
