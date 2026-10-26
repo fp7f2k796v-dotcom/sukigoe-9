@@ -295,6 +295,8 @@
     #result-list[hidden] { display: none !important; }
     .share-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
     .share-row input { flex: 1; min-width: 160px; padding: 12px; border: 1px solid #ecd5e2; border-radius: 10px; font: inherit; }
+    .share-buttons { display: flex; flex-direction: column; gap: 14px; margin: 14px 0; }
+    .share-buttons .primary-button { width: 100%; min-height: 54px; text-align: center; }
     .share-note { font-size: 12px; line-height: 1.7; color: #988693; }
 
     .primary-button {
@@ -708,10 +710,12 @@
       <div class="share-row">
         <input id="player-name" type="text" maxlength="40" placeholder="名前を入力（空欄でもOK）">
         <button class="secondary-button" id="save-result-image-button">結果画像を保存</button>
-        <button class="primary-button" id="share-result-button">結果を共有</button>
-        <button class="primary-button" id="share-image-result-button">画像付きで共有</button>
       </div>
-      <p class="share-note">「結果を共有」は順位一覧とサイトのリンクを投稿します。「画像付きで共有」は結果画像と通常のサイトURLを一緒に共有します。端末やアプリの対応状況によっては、共有画面でXを選ぶか、画像を保存して投稿画面で添付してください。</p>
+      <div class="share-buttons">
+        <button class="primary-button" id="share-result-button" type="button">結果を共有</button>
+        <button class="primary-button" id="share-image-result-button" type="button">画像付きで共有</button>
+      </div>
+      <p class="share-note">「結果を共有」はURLカード用の投稿文でXを開きます。「画像付きで共有」は通常のサイトURL入りの投稿文でXを開き、結果画像を保存します。保存した画像は、Xの投稿画面で自分で添付してください。</p>
       <p id="share-message" class="help-text" aria-live="polite"></p>
       <section class="aggregate-box" aria-labelledby="aggregate-title">
         <h3 id="aggregate-title">みんなの好き声集計</h3>
@@ -1604,28 +1608,31 @@ document.getElementById("share-result-button").addEventListener("click",()=>{
   const opened=openXShare(shareText(false));
   if(opened) document.getElementById("share-message").textContent="URLカード用の投稿文でXを開きました！";
 });
-document.getElementById("share-image-result-button").addEventListener("click", async ()=>{
+document.getElementById("share-image-result-button").addEventListener("click", ()=>{
   const message=document.getElementById("share-message");
-  const canvas=drawResultImage();
   const text=shareText(true); // 画像付き共有ではクエリなしの通常URLを使う
+  // iOS Safariなどでポップアップがブロックされないよう、クリック直後にX投稿画面を開く
+  const opened=openXShare(text);
+  if (!opened) return;
   try {
-    const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error("画像を作成できませんでした。")),"image/png"));
-    const file=new File([blob],"好き声9選.png",{type:"image/png"});
-    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
-      await navigator.share({files:[file],title:"好き声9選",text});
-      message.textContent="画像と通常のサイトURLを共有しました！ 共有先でXを選べる場合は、そのまま投稿できます。";
-      return;
-    }
-    // ファイル共有に対応しない場合は画像を保存し、通常URL入りの投稿文でXを開く
-    const url=URL.createObjectURL(blob);
-    const link=document.createElement("a"); link.download="好き声9選.png"; link.href=url;
-    document.body.appendChild(link); link.click(); link.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),10000);
-    const opened=openXShare(text);
-    message.textContent=opened ? "結果画像を保存し、通常URL入りの投稿文でXを開きました。投稿画面で保存した画像を添付してください。" : "結果画像を保存しました。画像を添付して共有してください。";
+    const canvas=drawResultImage();
+    canvas.toBlob(blob=>{
+      if (!blob) {
+        message.textContent="Xの投稿画面を開きました。画像を保存できなかったので、結果画像を長押しして保存し、投稿画面で添付してください。";
+        return;
+      }
+      const url=URL.createObjectURL(blob);
+      const link=document.createElement("a");
+      link.download="好き声9選.png";
+      link.href=url;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),60000);
+      message.textContent="Xの投稿画面を開きました！ 画像を保存して、Xの投稿画面で手動で添付してください。投稿文には通常のサイトURLが入っています。";
+    },"image/png");
   } catch(error) {
-    if(error && error.name==="AbortError") { message.textContent="共有をキャンセルしました。必要なら「結果画像を保存」から画像を保存できます。"; return; }
-    message.textContent="画像付き共有を開けませんでした。「結果画像を保存」で保存し、通常URL入りの投稿文で共有してください。";
+    message.textContent="Xの投稿画面を開きました！ 画像を保存し、投稿画面で手動で添付してください。";
   }
 });
 document.getElementById("result-back-button").addEventListener("click",()=>showScreen("home"));
