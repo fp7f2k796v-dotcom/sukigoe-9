@@ -1565,11 +1565,10 @@ function drawResultImage() {
   return canvas;
 }
 function getShareBaseUrl() { return "https://fp7f2k796v-dotcom.github.io/sukigoe-9/"; }
-function getVersionedShareUrl() { return `${getShareBaseUrl()}?v=4`; }
 function getResultShareUrl() {
   const rows = getResultRows().map(row => ({rank: Number.parseInt(row.rank, 10), name: row.name}));
   const payload = encodeURIComponent(JSON.stringify(rows));
-  return `${getVersionedShareUrl()}&result=${payload}`;
+  return `https://sukigoe-9-share.sukigoe9.workers.dev/?result=${payload}`;
 }
 function shareText(imageMode) {
   const player=document.getElementById("player-name").value.trim();
