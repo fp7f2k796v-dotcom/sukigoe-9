@@ -710,7 +710,7 @@
     <section class="panel" id="result-screen" hidden>
       <h2>好き声9選ソート結果</h2>
       <p class="help-text">選んだ声優の中から決まったTOP9です。</p>
-      <ol id="result-list" class="result-grid" hidden></ol>
+      <ol id="result-list" class="result-grid" hidden aria-hidden="true"></ol>
       <div class="result-image-wrap">
         <img id="result-image-preview" class="result-image-preview" alt="好き声9選の順位結果画像">
       </div>
@@ -725,7 +725,7 @@
         <button class="primary-button" id="share-result-button" type="button">結果を共有</button>
         <button class="primary-button" id="share-image-result-button" type="button">画像付きで共有</button>
       </div>
-      <p class="share-note">「結果を共有」からXまたはLINEを選べます。「画像付きで共有」は今までどおりXの投稿画面を開きます。保存した画像は、Xの投稿画面で自分で添付してください。</p>
+      <p class="share-note">「結果を共有」からXまたはLINEを選べます。「画像付きで共有」はURLを付けずにXの投稿画面を開きます。保存した結果画像を投稿画面で添付してください。</p>
       <div class="share-choice-backdrop" id="share-choice-modal" hidden role="dialog" aria-modal="true" aria-labelledby="share-choice-title">
         <div class="share-choice-dialog">
           <h3 id="share-choice-title">どこで共有する？</h3>
@@ -1319,7 +1319,7 @@ function answerFinal(winner) {
   setTimeout(() => { finalAnswerLocked = false; comparisonList.style.pointerEvents = ""; [...comparisonList.querySelectorAll("button")].forEach(b => b.disabled = false); }, 450);
 }
 function showFinalResult() {
-  const actors=finalSortOrder.slice(0,9); resultList.innerHTML=""; resultList.hidden = false; document.getElementById("make-own-result-button").hidden = true;
+  const actors=finalSortOrder.slice(0,9); resultList.innerHTML=""; resultList.hidden = true; document.getElementById("make-own-result-button").hidden = true;
   document.getElementById("share-message").textContent = "";
   resultList.classList.add("result-grid");
   const visualOrder = [3,4,5,1,0,2,6,7,8];
@@ -1574,10 +1574,10 @@ function getResultShareUrl() {
 function shareText(imageMode) {
   const player=document.getElementById("player-name").value.trim();
   const rows=getResultRows();
-  const baseUrl=imageMode ? getShareBaseUrl() : getResultShareUrl();
+  const baseUrl=imageMode ? "" : getResultShareUrl();
   if(imageMode){const prefix=player?`${player}の男性声優好き声9選🗣️⭐️`:`私の男性声優好き声9選🗣️⭐️`;return `${prefix}
 
-#男性声優好き声9選 ${baseUrl}`;}
+#男性声優好き声9選`;}
   const ranking=rows.map((row,i)=>`${i+1}位　${row.name}`).join("\n");
   const title=player?`♡${player}の好き声9選♡`:`♡好き声9選♡`;
   return `${title}
@@ -1667,7 +1667,7 @@ document.getElementById("share-image-result-button").addEventListener("click", (
       link.click();
       link.remove();
       setTimeout(()=>URL.revokeObjectURL(url),60000);
-      message.textContent="Xの投稿画面を開きました！ 画像を保存して、Xの投稿画面で手動で添付してください。投稿文には通常のサイトURLが入っています。";
+      message.textContent="Xの投稿画面を開きました！ 結果画像を保存して、投稿画面で添付してください。投稿文にリンクカードは表示されません。";
     },"image/png");
   } catch(error) {
     message.textContent="Xの投稿画面を開きました！ 画像を保存し、投稿画面で手動で添付してください。";
@@ -1699,7 +1699,7 @@ function loadSharedResultFromUrl() {
       const credit=document.createElement("span");credit.className="result-credit";credit.textContent="共有された結果";
       item.append(rank,name,credit);resultList.appendChild(item);
     });
-    resultList.hidden = false;
+    resultList.hidden = true;
     document.getElementById("result-image-preview").src = drawResultImage().toDataURL("image/png");
     document.querySelector("#result-screen .help-text").textContent = "共有された好き声9選の結果です。";
     document.getElementById("player-name").value = "";
