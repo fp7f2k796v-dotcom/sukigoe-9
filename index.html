@@ -105,6 +105,8 @@
     #comparison-instruction.candidate-count-ready { margin:14px 0 18px; padding:0; border:0; border-radius:0; background:transparent; color:#766474; font-size:clamp(19px,4.5vw,24px); line-height:1.5; font-weight:700; }
     #comparison-instruction .candidate-number { color:#a85f88; font-weight:800; }
     #start-final-button { padding:16px 24px; min-height:58px; font-size:16px; font-weight:700; }
+    /* 集計機能は現在非公開 */
+    .aggregate-home-card, #aggregate-screen, #result-screen .aggregate-box { display:none !important; }
     .aggregate-screen-panel { background:linear-gradient(145deg,#fff 0%,#faf9ff 100%); border-color:#deddf7; }
     #aggregate-screen > h2 { color:#6865ad; }
     #aggregate-screen > .help-text { color:#817e98; }
@@ -298,6 +300,14 @@
     .share-buttons { display: flex; flex-direction: column; gap: 14px; margin: 14px 0; }
     .share-buttons .primary-button { width: 100%; min-height: 54px; text-align: center; }
     .share-note { font-size: 12px; line-height: 1.7; color: #988693; }
+    .share-choice-backdrop { position:fixed; inset:0; z-index:1000; background:#24151dcc; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .share-choice-backdrop[hidden] { display:none; }
+    .share-choice-dialog { width:min(100%,360px); background:#fffafd; border:1px solid #edcddd; border-radius:20px; padding:22px; box-shadow:0 18px 60px #24151d33; }
+    .share-choice-dialog h3 { margin:0 0 8px; text-align:center; }
+    .share-choice-dialog p { margin:0 0 18px; text-align:center; font-size:13px; color:#988693; }
+    .share-choice-dialog button { width:100%; min-height:50px; margin:6px 0; }
+    .line-share-button { background:#06c755 !important; border-color:#06c755 !important; color:white !important; }
+    .share-choice-cancel { background:white !important; color:#925273 !important; border:1px solid #dba7c4 !important; }
 
     .primary-button {
       padding: 13px 20px;
@@ -715,7 +725,17 @@
         <button class="primary-button" id="share-result-button" type="button">結果を共有</button>
         <button class="primary-button" id="share-image-result-button" type="button">画像付きで共有</button>
       </div>
-      <p class="share-note">「結果を共有」はURLカード用の投稿文でXを開きます。「画像付きで共有」は通常のサイトURL入りの投稿文でXを開き、結果画像を保存します。保存した画像は、Xの投稿画面で自分で添付してください。</p>
+      <p class="share-note">「結果を共有」からXまたはLINEを選べます。「画像付きで共有」は今までどおりXの投稿画面を開きます。保存した画像は、Xの投稿画面で自分で添付してください。</p>
+      <div class="share-choice-backdrop" id="share-choice-modal" hidden role="dialog" aria-modal="true" aria-labelledby="share-choice-title">
+        <div class="share-choice-dialog">
+          <h3 id="share-choice-title">どこで共有する？</h3>
+          <p>共有先を選んでね♡</p>
+          <button class="primary-button" id="share-choice-x" type="button">𝕏　Xで共有</button>
+          <button class="primary-button line-share-button" id="share-choice-line" type="button">LINEで共有</button>
+          <button class="primary-button share-choice-cancel" id="share-choice-cancel" type="button">キャンセル</button>
+        </div>
+      </div>
+      <button class="primary-button" id="make-own-result-button" type="button" hidden>自分も好き声9選を作る</button>
       <p id="share-message" class="help-text" aria-live="polite"></p>
       <section class="aggregate-box" aria-labelledby="aggregate-title">
         <h3 id="aggregate-title">みんなの好き声集計</h3>
@@ -1299,7 +1319,7 @@ function answerFinal(winner) {
   setTimeout(() => { finalAnswerLocked = false; comparisonList.style.pointerEvents = ""; [...comparisonList.querySelectorAll("button")].forEach(b => b.disabled = false); }, 450);
 }
 function showFinalResult() {
-  const actors=finalSortOrder.slice(0,9); resultList.innerHTML="";
+  const actors=finalSortOrder.slice(0,9); resultList.innerHTML=""; resultList.hidden = false; document.getElementById("make-own-result-button").hidden = true;
   document.getElementById("share-message").textContent = "";
   resultList.classList.add("result-grid");
   const visualOrder = [3,4,5,1,0,2,6,7,8];
@@ -1546,10 +1566,15 @@ function drawResultImage() {
 }
 function getShareBaseUrl() { return "https://fp7f2k796v-dotcom.github.io/sukigoe-9/"; }
 function getVersionedShareUrl() { return `${getShareBaseUrl()}?v=4`; }
+function getResultShareUrl() {
+  const rows = getResultRows().map(row => ({rank: Number.parseInt(row.rank, 10), name: row.name}));
+  const payload = encodeURIComponent(JSON.stringify(rows));
+  return `${getVersionedShareUrl()}&result=${payload}`;
+}
 function shareText(imageMode) {
   const player=document.getElementById("player-name").value.trim();
   const rows=getResultRows();
-  const baseUrl=imageMode ? getShareBaseUrl() : getVersionedShareUrl();
+  const baseUrl=imageMode ? getShareBaseUrl() : getResultShareUrl();
   if(imageMode){const prefix=player?`${player}の男性声優好き声9選🗣️⭐️`:`私の男性声優好き声9選🗣️⭐️`;return `${prefix}
 
 #男性声優好き声9選 ${baseUrl}`;}
@@ -1604,9 +1629,22 @@ document.getElementById("save-result-image-button").addEventListener("click", as
     }
   }
 });
-document.getElementById("share-result-button").addEventListener("click",()=>{
+const shareChoiceModal = document.getElementById("share-choice-modal");
+function closeShareChoice() { shareChoiceModal.hidden = true; }
+document.getElementById("share-result-button").addEventListener("click",()=>{ shareChoiceModal.hidden = false; });
+document.getElementById("share-choice-cancel").addEventListener("click", closeShareChoice);
+shareChoiceModal.addEventListener("click", event => { if (event.target === shareChoiceModal) closeShareChoice(); });
+document.getElementById("share-choice-x").addEventListener("click",()=>{
+  closeShareChoice();
   const opened=openXShare(shareText(false));
   if(opened) document.getElementById("share-message").textContent="URLカード用の投稿文でXを開きました！";
+});
+document.getElementById("share-choice-line").addEventListener("click",()=>{
+  closeShareChoice();
+  const text = shareText(false);
+  const lineUrl = "https://line.me/R/share?text=" + encodeURIComponent(text);
+  window.open(lineUrl, "_blank", "noopener,noreferrer");
+  document.getElementById("share-message").textContent="LINEの共有画面を開きました！送り先を選んでね。";
 });
 document.getElementById("share-image-result-button").addEventListener("click", ()=>{
   const message=document.getElementById("share-message");
@@ -1636,6 +1674,40 @@ document.getElementById("share-image-result-button").addEventListener("click", (
   }
 });
 document.getElementById("result-back-button").addEventListener("click",()=>showScreen("home"));
+document.getElementById("make-own-result-button").addEventListener("click",()=>{
+  document.getElementById("make-own-result-button").hidden = true;
+  document.getElementById("result-list").hidden = false;
+  document.getElementById("player-name").value = "";
+  history.replaceState(null, "", getShareBaseUrl());
+  showScreen("home");
+});
+function loadSharedResultFromUrl() {
+  const encoded = new URLSearchParams(location.search).get("result");
+  if (!encoded) return;
+  try {
+    const rows = JSON.parse(encoded);
+    if (!Array.isArray(rows) || rows.length !== 9 || rows.some(r => !r || !Number.isInteger(Number(r.rank)) || Number(r.rank)<1 || Number(r.rank)>9 || typeof r.name !== "string" || !r.name.trim() || r.name.length>100)) return;
+    resultList.innerHTML = "";
+    resultList.classList.add("result-grid");
+    const visualOrder = [3,4,5,1,0,2,6,7,8];
+    visualOrder.forEach(index => {
+      const row = rows.find(r => Number(r.rank) === index+1); if (!row) return;
+      const item=document.createElement("li"); item.className=`result-card rank-${index+1}`;
+      if(index===0){const crown=document.createElement("span");crown.className="result-crown";crown.textContent="♛";item.appendChild(crown);}
+      const rank=document.createElement("span");rank.className="result-rank";rank.textContent=`${index+1}位`;
+      const name=document.createElement("span");name.className="result-name";name.textContent=row.name;
+      const credit=document.createElement("span");credit.className="result-credit";credit.textContent="共有された結果";
+      item.append(rank,name,credit);resultList.appendChild(item);
+    });
+    resultList.hidden = false;
+    document.getElementById("result-image-preview").src = drawResultImage().toDataURL("image/png");
+    document.querySelector("#result-screen .help-text").textContent = "共有された好き声9選の結果です。";
+    document.getElementById("player-name").value = "";
+    document.getElementById("make-own-result-button").hidden = false;
+    showScreen("result");
+  } catch (_) { /* 不正な共有URLは通常のトップ画面を表示 */ }
+}
+loadSharedResultFromUrl();
 
 // Anonymous aggregation via Google Apps Script.
 // Replace this URL with the Web App URL shown after deploying Code.gs.
